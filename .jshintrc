@@ -1,0 +1,19 @@
+{
+  "browser": true,
+  "jquery": true,
+  "node": true,
+  "eqeqeq": true,
+  "indent": 2,
+  "latedef": "nofunc",
+  "maxlen": 160,
+  "newcap": true,
+  "strict": false,
+  "undef": true,
+  "unused": false,
+  "eqnull": true,
+  "sub": true,
+  "evil": true,
+  "globals": {
+    "L": false
+  }
+}

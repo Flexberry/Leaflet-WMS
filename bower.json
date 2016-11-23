@@ -1,0 +1,29 @@
+{
+  "name": "Leaflet-WMS",
+  "version": "1.0.0",
+  "homepage": "https://github.com/Flexberry/Leaflet-WMS",
+  "description": "Leaflet plug-in containing extensions for L.TileLayer.WMS layers",
+  "license": "MIT",
+  "main": "dist/Leaflet-WMS.js",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "examples",
+    "spec",
+    "src"
+  ],
+  "keywords": [
+    "maps",
+    "leaflet",
+    "wms"
+  ],
+  "dependencies": {
+  },
+  "devDependencies": {
+    "leaflet": "1.0.1"
+  },
+  "resolutions": {
+    "leaflet": "1.0.1"
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "name": "Leaflet-WMS",
+  "version": "1.0.0",
+  "description": "Leaflet plug-in containing extensions for L.TileLayer.WMS layers",
+  "main": "dist/Leaflet-WMS.js",
+  "directories": {
+    "example": "./examples",
+    "source": "./src",
+    "tests": "./spec"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Flexberry/Leaflet-WMS.git"
+  },
+  "keywords": [
+    "maps",
+    "leaflet",
+    "wms"
+  ],
+  "author": "New Platform Ltd",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Flexberry/Leaflet-WMS/issues"
+  },
+  "homepage": "http://flexberry.github.io/Leaflet-WMS/",
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "grunt": "^1.0.1",
+    "grunt-contrib-clean": "^1.0.0",
+    "grunt-contrib-concat": "^1.0.1",
+    "grunt-contrib-copy": "^1.0.0",
+    "grunt-contrib-jshint": "^1.0.0",
+    "grunt-contrib-uglify": "^1.0.1",
+    "grunt-contrib-watch": "^1.0.0",
+    "grunt-gh-pages": "^1.1.0",
+    "grunt-karma": "^2.0.0",
+    "karma": "^0.13.22",
+    "karma-chai": "^0.1.0",
+    "karma-chrome-launcher": "^1.0.1",
+    "karma-mocha": "^1.0.1",
+    "karma-phantomjs-launcher": "^1.0.0",
+    "karma-sinon": "^1.0.5",
+    "karma-sinon-chai": "^1.2.0",
+    "mocha": "^2.5.3",
+    "sinon": "^1.17.4",
+    "sinon-chai": "^2.8.0"
+  },
+  "scripts": {
+    "test": "./node_modules/.bin/karma start --single-run --browsers PhantomJS"
+  }
+}
