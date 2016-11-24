@@ -21,7 +21,8 @@
   "dependencies": {
   },
   "devDependencies": {
-    "leaflet": "1.0.1"
+    "leaflet": "1.0.1",
+    "spin.js": "2.3.2"
   },
   "resolutions": {
     "leaflet": "1.0.1"

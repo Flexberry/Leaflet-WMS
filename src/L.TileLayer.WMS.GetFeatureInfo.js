@@ -6,27 +6,27 @@ L.TileLayer.WMS.include({
       }
     }, options || {});
 
+    var _this = this;
     var done = function(features, xhr) {
       if (typeof options.done === 'function') {
-        options.done(features, xhr);
+        options.done.call(_this, features, xhr);
       }
 
       if (typeof options.always === 'function') {
-        options.always();
+        options.always.call(_this);
       }
     };
 
     var fail = function(errorThrown, xhr) {
       if (typeof options.fail === 'function') {
-        options.fail(errorThrown, xhr);
+        options.fail.call(_this, errorThrown, xhr);
       }
 
       if (typeof options.always === 'function') {
-        options.always();
+        options.always.call(_this);
       }
     };
 
-    var _this = this;
     var getInfoFormat = options.infoFormat ? function(callbacks) {
       callbacks.done(options.infoFormat);
     } : _this.getInfoFormat;

@@ -60,6 +60,8 @@ module.exports = function (grunt) {
         files: [
           { expand: true, cwd: 'bower_components/leaflet/dist/', src: '**', dest: '<%= examplesPath %>/lib/vendor/leaflet/' },
 
+          { expand: true, cwd: 'bower_components/spin.js/', src: 'spin.js', dest: '<%= examplesPath %>/lib/vendor/spin.js/' },
+
           { expand: true, cwd: '<%= distPath %>/', src: '**', dest: '<%= examplesPath %>/lib/' }
         ],
       },
