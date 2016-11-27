@@ -1,4 +1,4 @@
-/*! Leaflet-WMS 1.0.0 2016-11-25 */
+/*! Leaflet-WMS 1.0.0 2016-11-28 */
 ;(function(window, document, undefined) {
 "use strict";
 if (!String.prototype.trim) {
@@ -82,31 +82,6 @@ L.TileLayer.WMS.Util.JSON = {
 };
 
 L.TileLayer.WMS.Util.XML = {
-  normalize: function(node) {
-    var childNode, nextNode;
-    var regexBlank = /^\s*$/;
-
-    switch (node.nodeType) {
-      case 3: // Text node.
-        if (regexBlank.test(node.nodeValue)) {
-          node.parentNode.removeChild(node);
-        }
-        break;
-      case 1: // Element node.
-      case 9: // Document node.
-        childNode = node.firstChild;
-
-        while (childNode) {
-          nextNode = childNode.nextSibling;
-          L.TileLayer.WMS.Util.XML.normalize(childNode);
-          childNode = nextNode;
-        }
-        break;
-    }
-
-    return node;
-  },
-
   parse: function(xmlString) {
     var xml;
 
@@ -142,7 +117,7 @@ L.TileLayer.WMS.Util.XML = {
       throw new Error('Unable to parse specified \'xmlString\' it isn\'t valid: ' + errorMessage);
     }
 
-    return L.TileLayer.WMS.Util.XML.normalize(xml.documentElement);
+    return L.TileLayer.WMS.Util.XML.normalizeElement(xml.documentElement);
   },
 
   getElementText: function(element) {
@@ -151,6 +126,25 @@ L.TileLayer.WMS.Util.XML = {
     }
 
     return element.innerText || element.textContent || element.text;
+  },
+
+  normalizeElement: function(element) {
+    // Remove empty <text></text> elements.
+    if (element.nodeType === 3 && L.TileLayer.WMS.Util.XML.getElementText(element).trim() === '' && element.parentNode) {
+      element.parentNode.removeChild(element);
+    }
+
+    var childElement, nextElement;
+
+    // Recursively normalize child elements.
+    childElement = element.firstChild;
+    while (childElement) {
+      nextElement = childElement.nextSibling;
+      L.TileLayer.WMS.Util.XML.normalizeElement(childElement);
+      childElement = nextElement;
+    }
+
+    return element;
   }
 };
 
@@ -619,7 +613,7 @@ L.TileLayer.WMS.Format['application/vnd.ogc.gml/3.1.1'] = {
       toGeoJSON: function(coordElement) {
         var coordinates = [];
         var pushCoordinate = function(coordinateElement) {
-          var coordinate = window.parseFloat(L.TileLayer.WMS.Util.XML.getElementText(coordinateElement));
+          var coordinate = window.parseFloat(L.TileLayer.WMS.Util.XML.getElementText(coordinateElement).trim());
           coordinates.push(coordinate);
         };
 
@@ -647,7 +641,8 @@ L.TileLayer.WMS.Format['application/vnd.ogc.gml/3.1.1'] = {
 
         var results = [];
         var coordinates = L.TileLayer.WMS.Util.XML.getElementText(coordinatesElement)
-          .replace(new RegExp('\s*' + componentSeparator + '\s*', 'g'), componentSeparator)
+          .trim()
+          .replace(new RegExp('\\s*' + componentSeparator + '\\s*', 'gi'), componentSeparator)
           .split(tupleSeparator);
 
         var parseCoordinate = function(coordinate) {
@@ -675,6 +670,7 @@ L.TileLayer.WMS.Format['application/vnd.ogc.gml/3.1.1'] = {
         var tupleSeparator = attributes.ts && attributes.ts.value || separators.tuple;
 
         return L.TileLayer.WMS.Util.XML.getElementText(posElement)
+          .trim()
           .split(tupleSeparator)
           .map(function(coordinate) {
             if (decimalSeparator !== '.') {
@@ -691,10 +687,12 @@ L.TileLayer.WMS.Format['application/vnd.ogc.gml/3.1.1'] = {
         var attributes = posListElement.attributes;
         var decimalSeparator = attributes.decimal && attributes.decimal.value || separators.decimal;
         var tupleSeparator = attributes.ts && attributes.ts.value || separators.tuple;
-        var dimensions = window.parseInt(attributes.srsDimension || attributes.dimension, 10) || 2;
+        var dimensions = window.parseInt((attributes['srsDimension'] || attributes['dimension'] || {}).value, 10) || 2;
 
         var results = [];
-        var coordinates = L.TileLayer.WMS.Util.XML.getElementText(posListElement).split(tupleSeparator);
+        var coordinates = L.TileLayer.WMS.Util.XML.getElementText(posListElement)
+          .trim()
+          .split(tupleSeparator);
         for (var i = 0, len = coordinates.length; i < len; i += dimensions) {
           var component = [];
           for (var j = i, len2 = i + dimensions; j < len2; j++) {
@@ -895,7 +893,9 @@ L.TileLayer.WMS.Format['application/vnd.ogc.wms_xml'] = {
         for (var j in attributes) {
           if (attributes.hasOwnProperty(j)) {
             var attribute = attributes[j];
-            feature.properties[attribute.name] = attribute.value || null;
+            if (attribute && attribute.name) {
+              feature.properties[attribute.name] = attribute.value || null;
+            }
           }
         }
 

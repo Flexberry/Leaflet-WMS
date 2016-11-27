@@ -52,7 +52,7 @@ describe('L.TileLayer.WMS.Format[\'text/html\']', function () {
   '</html>';
 
   describe('#toGeoJSON', function () {
-    it('returns GeoJSON FeatureCollection', function () {
+    it('parses features table', function () {
       var format = L.TileLayer.WMS.Format['text/html'];
       var featureCollection = format.toGeoJSON(responseText);
 

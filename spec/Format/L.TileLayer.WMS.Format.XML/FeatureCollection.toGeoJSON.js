@@ -8,7 +8,7 @@ describe('L.TileLayer.WMS.Format[\'text/xml\']', function () {
     '</FeatureInfoResponse>';
 
   describe('#toGeoJSON', function () {
-    it('returns GeoJSON FeatureCollection', function () {
+    it('parses FeatureInfoResponse', function () {
       var format = L.TileLayer.WMS.Format['text/xml'];
       var featureCollection = format.toGeoJSON(responseText);
 

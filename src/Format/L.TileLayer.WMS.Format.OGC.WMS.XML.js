@@ -22,7 +22,9 @@ L.TileLayer.WMS.Format['application/vnd.ogc.wms_xml'] = {
         for (var j in attributes) {
           if (attributes.hasOwnProperty(j)) {
             var attribute = attributes[j];
-            feature.properties[attribute.name] = attribute.value || null;
+            if (attribute && attribute.name) {
+              feature.properties[attribute.name] = attribute.value || null;
+            }
           }
         }
 

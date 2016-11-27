@@ -1,29 +1,4 @@
 L.TileLayer.WMS.Util.XML = {
-  normalize: function(node) {
-    var childNode, nextNode;
-    var regexBlank = /^\s*$/;
-
-    switch (node.nodeType) {
-      case 3: // Text node.
-        if (regexBlank.test(node.nodeValue)) {
-          node.parentNode.removeChild(node);
-        }
-        break;
-      case 1: // Element node.
-      case 9: // Document node.
-        childNode = node.firstChild;
-
-        while (childNode) {
-          nextNode = childNode.nextSibling;
-          L.TileLayer.WMS.Util.XML.normalize(childNode);
-          childNode = nextNode;
-        }
-        break;
-    }
-
-    return node;
-  },
-
   parse: function(xmlString) {
     var xml;
 
@@ -59,7 +34,7 @@ L.TileLayer.WMS.Util.XML = {
       throw new Error('Unable to parse specified \'xmlString\' it isn\'t valid: ' + errorMessage);
     }
 
-    return L.TileLayer.WMS.Util.XML.normalize(xml.documentElement);
+    return L.TileLayer.WMS.Util.XML.normalizeElement(xml.documentElement);
   },
 
   getElementText: function(element) {
@@ -68,5 +43,24 @@ L.TileLayer.WMS.Util.XML = {
     }
 
     return element.innerText || element.textContent || element.text;
+  },
+
+  normalizeElement: function(element) {
+    // Remove empty <text></text> elements.
+    if (element.nodeType === 3 && L.TileLayer.WMS.Util.XML.getElementText(element).trim() === '' && element.parentNode) {
+      element.parentNode.removeChild(element);
+    }
+
+    var childElement, nextElement;
+
+    // Recursively normalize child elements.
+    childElement = element.firstChild;
+    while (childElement) {
+      nextElement = childElement.nextSibling;
+      L.TileLayer.WMS.Util.XML.normalizeElement(childElement);
+      childElement = nextElement;
+    }
+
+    return element;
   }
 };

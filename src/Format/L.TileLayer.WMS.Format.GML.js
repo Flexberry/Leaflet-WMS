@@ -80,7 +80,7 @@
       toGeoJSON: function(coordElement) {
         var coordinates = [];
         var pushCoordinate = function(coordinateElement) {
-          var coordinate = window.parseFloat(L.TileLayer.WMS.Util.XML.getElementText(coordinateElement));
+          var coordinate = window.parseFloat(L.TileLayer.WMS.Util.XML.getElementText(coordinateElement).trim());
           coordinates.push(coordinate);
         };
 
@@ -108,7 +108,8 @@
 
         var results = [];
         var coordinates = L.TileLayer.WMS.Util.XML.getElementText(coordinatesElement)
-          .replace(new RegExp('\s*' + componentSeparator + '\s*', 'g'), componentSeparator)
+          .trim()
+          .replace(new RegExp('\\s*' + componentSeparator + '\\s*', 'gi'), componentSeparator)
           .split(tupleSeparator);
 
         var parseCoordinate = function(coordinate) {
@@ -136,6 +137,7 @@
         var tupleSeparator = attributes.ts && attributes.ts.value || separators.tuple;
 
         return L.TileLayer.WMS.Util.XML.getElementText(posElement)
+          .trim()
           .split(tupleSeparator)
           .map(function(coordinate) {
             if (decimalSeparator !== '.') {
@@ -152,10 +154,12 @@
         var attributes = posListElement.attributes;
         var decimalSeparator = attributes.decimal && attributes.decimal.value || separators.decimal;
         var tupleSeparator = attributes.ts && attributes.ts.value || separators.tuple;
-        var dimensions = window.parseInt(attributes.srsDimension || attributes.dimension, 10) || 2;
+        var dimensions = window.parseInt((attributes['srsDimension'] || attributes['dimension'] || {}).value, 10) || 2;
 
         var results = [];
-        var coordinates = L.TileLayer.WMS.Util.XML.getElementText(posListElement).split(tupleSeparator);
+        var coordinates = L.TileLayer.WMS.Util.XML.getElementText(posListElement)
+          .trim()
+          .split(tupleSeparator);
         for (var i = 0, len = coordinates.length; i < len; i += dimensions) {
           var component = [];
           for (var j = i, len2 = i + dimensions; j < len2; j++) {
