@@ -52,7 +52,6 @@
       toGeoJSON: function(featureMemberElement) {
         var feature = {
           type: 'Feature',
-          id: null,
           geometry: null,
           properties: {
           }
@@ -69,7 +68,7 @@
           if (propertyChildElement && gmlGeometryElementsTagNames.indexOf(propertyChildElement.tagName) >= 0) {
             feature.geometry = gmlElement.toGeoJSON(propertyChildElement);
           } else {
-            feature.properties[propertyName] = L.TileLayer.WMS.Util.XML.getElementText(propertyElement);
+            feature.properties[propertyName] = L.TileLayer.WMS.Util.XML.getElementText(propertyElement) || null;
           }
         }
 

@@ -12,7 +12,6 @@ L.TileLayer.WMS.Format['application/vnd.ogc.wms_xml'] = {
     for (var i = 0, fieldsCount = fieldElements.length; i < fieldsCount; i++) {
         var feature = {
           type: 'Feature',
-          id: null,
           geometry: null,
           properties: {
           }
@@ -21,9 +20,10 @@ L.TileLayer.WMS.Format['application/vnd.ogc.wms_xml'] = {
         var fieldElement = fieldElements[i];
         var attributes = fieldElement.attributes;
         for (var j in attributes) {
-          var attribute = attributes[j];
-
-          feature.properties[attribute.name] = attribute.value || null;
+          if (attributes.hasOwnProperty(j)) {
+            var attribute = attributes[j];
+            feature.properties[attribute.name] = attribute.value || null;
+          }
         }
 
         featureCollection.features.push(feature);

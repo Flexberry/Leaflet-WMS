@@ -1,4 +1,29 @@
 L.TileLayer.WMS.Util.XML = {
+  normalize: function(node) {
+    var childNode, nextNode;
+    var regexBlank = /^\s*$/;
+
+    switch (node.nodeType) {
+      case 3: // Text node.
+        if (regexBlank.test(node.nodeValue)) {
+          node.parentNode.removeChild(node);
+        }
+        break;
+      case 1: // Element node.
+      case 9: // Document node.
+        childNode = node.firstChild;
+
+        while (childNode) {
+          nextNode = childNode.nextSibling;
+          L.TileLayer.WMS.Util.XML.normalize(childNode);
+          childNode = nextNode;
+        }
+        break;
+    }
+
+    return node;
+  },
+
   parse: function(xmlString) {
     var xml;
 
@@ -34,7 +59,7 @@ L.TileLayer.WMS.Util.XML = {
       throw new Error('Unable to parse specified \'xmlString\' it isn\'t valid: ' + errorMessage);
     }
 
-    return xml.documentElement;
+    return L.TileLayer.WMS.Util.XML.normalize(xml.documentElement);
   },
 
   getElementText: function(element) {

@@ -1,4 +1,4 @@
-/*! Leaflet-WMS 1.0.0 2016-11-24 */
+/*! Leaflet-WMS 1.0.0 2016-11-25 */
 ;(function(window, document, undefined) {
 "use strict";
 if (!String.prototype.trim) {
@@ -82,6 +82,31 @@ L.TileLayer.WMS.Util.JSON = {
 };
 
 L.TileLayer.WMS.Util.XML = {
+  normalize: function(node) {
+    var childNode, nextNode;
+    var regexBlank = /^\s*$/;
+
+    switch (node.nodeType) {
+      case 3: // Text node.
+        if (regexBlank.test(node.nodeValue)) {
+          node.parentNode.removeChild(node);
+        }
+        break;
+      case 1: // Element node.
+      case 9: // Document node.
+        childNode = node.firstChild;
+
+        while (childNode) {
+          nextNode = childNode.nextSibling;
+          L.TileLayer.WMS.Util.XML.normalize(childNode);
+          childNode = nextNode;
+        }
+        break;
+    }
+
+    return node;
+  },
+
   parse: function(xmlString) {
     var xml;
 
@@ -117,7 +142,7 @@ L.TileLayer.WMS.Util.XML = {
       throw new Error('Unable to parse specified \'xmlString\' it isn\'t valid: ' + errorMessage);
     }
 
-    return xml.documentElement;
+    return L.TileLayer.WMS.Util.XML.normalize(xml.documentElement);
   },
 
   getElementText: function(element) {
@@ -566,7 +591,6 @@ L.TileLayer.WMS.Format['application/vnd.ogc.gml/3.1.1'] = {
       toGeoJSON: function(featureMemberElement) {
         var feature = {
           type: 'Feature',
-          id: null,
           geometry: null,
           properties: {
           }
@@ -583,7 +607,7 @@ L.TileLayer.WMS.Format['application/vnd.ogc.gml/3.1.1'] = {
           if (propertyChildElement && gmlGeometryElementsTagNames.indexOf(propertyChildElement.tagName) >= 0) {
             feature.geometry = gmlElement.toGeoJSON(propertyChildElement);
           } else {
-            feature.properties[propertyName] = L.TileLayer.WMS.Util.XML.getElementText(propertyElement);
+            feature.properties[propertyName] = L.TileLayer.WMS.Util.XML.getElementText(propertyElement) || null;
           }
         }
 
@@ -861,7 +885,6 @@ L.TileLayer.WMS.Format['application/vnd.ogc.wms_xml'] = {
     for (var i = 0, fieldsCount = fieldElements.length; i < fieldsCount; i++) {
         var feature = {
           type: 'Feature',
-          id: null,
           geometry: null,
           properties: {
           }
@@ -870,9 +893,10 @@ L.TileLayer.WMS.Format['application/vnd.ogc.wms_xml'] = {
         var fieldElement = fieldElements[i];
         var attributes = fieldElement.attributes;
         for (var j in attributes) {
-          var attribute = attributes[j];
-
-          feature.properties[attribute.name] = attribute.value || null;
+          if (attributes.hasOwnProperty(j)) {
+            var attribute = attributes[j];
+            feature.properties[attribute.name] = attribute.value || null;
+          }
         }
 
         featureCollection.features.push(feature);
@@ -892,42 +916,41 @@ L.TileLayer.WMS.Format['text/html'] = {
     };
 
     var documentElement = L.TileLayer.WMS.Util.XML.parse(responseText);
-    var tableElements = documentElement.getElementsByTagName('table');
-    for (var i = 0, tablesCount = tableElements.length; i < tablesCount; i++) {
-      var tableElement = tableElements[i];
+    var tableElement = documentElement.getElementsByTagName('table')[0];
+    if (!tableElement) {
+      return featureCollection;
+    }
 
-      var propertiesNames = [];
-      var thElements = tableElement.getElementsByTagName('th');
-      for (var j = 0, headersCount = thElements.length; j < headersCount; j++) {
-        var thElement = thElements[j];
-        propertiesNames.push(L.TileLayer.WMS.Util.XML.getElementText(thElement));
+    var propertiesNames = [];
+    var thElements = tableElement.getElementsByTagName('th');
+    for (var i = 0, headersCount = thElements.length; i < headersCount; i++) {
+      var thElement = thElements[i];
+      propertiesNames.push(L.TileLayer.WMS.Util.XML.getElementText(thElement));
+    }
+
+    var trElements = tableElement.getElementsByTagName('tr');
+    for (var j = 0, rowsCount = trElements.length; j < rowsCount; j++) {
+      var trElement = trElements[j];
+
+      var tdElements = trElement.getElementsByTagName('td');
+      if (tdElements.length !== propertiesNames.length) {
+        // Skip table row containing headers.
+        continue;
       }
 
-      var trElements = tableElement.getElementsByTagName('tr');
-      for (var k = 0, rowsCount = trElements.length; k < rowsCount; k++) {
-        var trElement = trElements[k];
-
-        var tdElements = trElement.getElementsByTagName('td');
-        if (tdElements.length !== propertiesNames.length) {
-          // Skip table row containing headers.
-          continue;
+      var feature = {
+        type: 'Feature',
+        geometry: null,
+        properties: {
         }
+      };
 
-        var feature = {
-          type: 'Feature',
-          id: null,
-          geometry: null,
-          properties: {
-          }
-        };
-
-        for (var l = 0, cellsCount = tdElements.length; l < cellsCount; l++) {
-          var tdElement = tdElements[l];
-          feature.properties[propertiesNames[l]] = L.TileLayer.WMS.Util.XML.getElementText(tdElement) || null;
-        }
-
-        featureCollection.features.push(feature);
+      for (var k = 0, cellsCount = tdElements.length; k < cellsCount; k++) {
+        var tdElement = tdElements[k];
+        feature.properties[propertiesNames[k]] = L.TileLayer.WMS.Util.XML.getElementText(tdElement) || null;
       }
+
+      featureCollection.features.push(feature);
     }
 
     return featureCollection;

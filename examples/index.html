@@ -57,59 +57,75 @@
 
     // Create & add OSM layer.
     var osm = new L.TileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png').addTo(map);
-	
-	// Create & add POI layer.
-	var poi = new L.TileLayer.WMS('http://geoserver.ics.perm.ru/geoserver/ows', {
-	  layers: 'osm_perm_region:perm_points_of_interest',
-	  format: 'image/png',
-	  transparent: true,
-	  version: '1.3.0',
-	  crs: L.CRS.EPSG4326
-	}).addTo(map);
+  
+    // Create & add POI layer.
+    var poi = new L.TileLayer.WMS('http://geoserver.ics.perm.ru/geoserver/ows', {
+      layers: 'osm_perm_region:perm_points_of_interest',
+      format: 'image/png',
+      transparent: true,
+      version: '1.3.0',
+      crs: L.CRS.EPSG4326,
+      name: 'Perm'
+    }).addTo(map);
 
-  // Create & add cadastre layer.
-  var cadastre = new L.TileLayer.WMS('https://pkk5.rosreestr.ru/arcgis/services/Cadastre/CadastreWMS/MapServer/WMSServer', {
-    layers: '18',
-    format: 'image/png',
-    transparent: true,
-    version: '1.1.0',
-    crs: L.CRS.EPSG3857
-  }).addTo(map);
+    // Create & add cadastre layer.
+    var cadastre = new L.TileLayer.WMS('https://pkk5.rosreestr.ru/arcgis/services/Cadastre/CadastreWMS/MapServer/WMSServer', {
+      layers: '18',
+      format: 'image/png',
+      transparent: true,
+      version: '1.1.0',
+      crs: L.CRS.EPSG3857,
+      name: 'Cadastre'
+    }).addTo(map);
 
-  // Handle click on map.
-  var wmsLayers = [poi, cadastre];
-	map.on('click', function(e) {
-    var wmsLayersCount = wmsLayers.length;
-    if (wmsLayersCount> 0) {
-      // Start spinner.
-      spinner.spin(body);
-    }
+    // Handle click on map.
+    var wmsLayers = [poi, cadastre];
+    map.on('click', function(e) {
+      var wmsLayersCount = wmsLayers.length;
+      if (wmsLayersCount> 0) {
+        // Start spinner.
+        spinner.spin(body);
+      }
 
-
-    // Send 'GetFeatureInfo' requests.
-    for (var i = 0; i < wmsLayersCount; i++) {
-      var wmsLayer = wmsLayers[i];
       var fullfilledRequestsCount = 0;
+      var popupContent = '';
 
-      wmsLayer.getFeatureInfo({
-        latlng: e.latlng,
-        done: function(features, xhr) {
-          console.log('getFeatureInfo done: ', features, xhr);
-        },
-        fail: function(errorThrown, xhr) {
-          console.error('getFeatureInfo fail: ', errorThrown, xhr);
-        },
-        always: function() {
-          fullfilledRequestsCount++;
+      // Send 'GetFeatureInfo' requests.
+      for (var i = 0; i < wmsLayersCount; i++) {
+        var wmsLayer = wmsLayers[i];
 
-          // Stop spinner.
-          if (fullfilledRequestsCount === wmsLayersCount) {
-            spinner.stop();
+        wmsLayer.getFeatureInfo({
+          latlng: e.latlng,
+          infoFormat: 'application/vnd.ogc.gml',
+          done: function(featuresCollection, xhr) {
+            popupContent += '<span>' + this.options.name + ':</span><br>';
+
+            var features = featuresCollection.features;
+            var featuresCount = features.length;
+            popupContent += 'Features count: ' + featuresCount + '<br>';
+            popupContent += '<br>'
+          },
+          fail: function(errorThrown, xhr) {
+            popupContent += '<span>' + this.options.name + ':</span><br>';
+            popupContent += 'Error message: \'' + errorThrown.message + '\'<br>';
+            popupContent += '<br>'
+          },
+          always: function() {
+            fullfilledRequestsCount++;
+
+            // Stop spinner.
+            if (fullfilledRequestsCount === wmsLayersCount) {
+              spinner.stop();
+
+              new L.Popup()
+                .setLatLng(e.latlng)
+                .setContent(popupContent)
+                .openOn(map)
+            }
           }
-        }
-      });
-    }
-	});
+        });
+      }
+    });
   </script>
 </body>
 </html>
