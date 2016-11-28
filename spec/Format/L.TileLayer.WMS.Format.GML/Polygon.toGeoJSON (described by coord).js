@@ -26,65 +26,64 @@ describe('L.TileLayer.WMS.Format[\'application/vnd.ogc.gml\']', function () {
       '  <gml:outerBoundaryIs>' +
       '    <gml:LinearRing>' +
       '      <gml:coord>' +
-      '        <gml:X>1</gml:X>' +
-      '        <gml:Y>2</gml:Y>' +
+      '        <gml:X>1.0</gml:X>' +
+      '        <gml:Y>2.0</gml:Y>' +
       '      </gml:coord>' +
       '      <gml:coord>' +
-      '        <gml:X>3</gml:X>' +
-      '        <gml:Y>4</gml:Y>' +
+      '        <gml:X>3.0</gml:X>' +
+      '        <gml:Y>4.0</gml:Y>' +
       '      </gml:coord>' +
       '      <gml:coord>' +
-      '        <gml:X>5</gml:X>' +
-      '        <gml:Y>6</gml:Y>' +
+      '        <gml:X>5.0</gml:X>' +
+      '        <gml:Y>6.0</gml:Y>' +
       '      </gml:coord>' +
       '      <gml:coord>' +
-      '        <gml:X>1</gml:X>' +
-      '        <gml:Y>2</gml:Y>' +
+      '        <gml:X>1.0</gml:X>' +
+      '        <gml:Y>2.0</gml:Y>' +
       '      </gml:coord>' +
       '    </gml:LinearRing>' +
       '  </gml:outerBoundaryIs>' +
       '  <gml:innerBoundaryIs>' +
       '    <gml:LinearRing>' +
       '      <gml:coord>' +
-      '        <gml:X>2</gml:X>' +
-      '        <gml:Y>3</gml:Y>' +
+      '        <gml:X>2.0</gml:X>' +
+      '        <gml:Y>3.0</gml:Y>' +
       '      </gml:coord>' +
       '      <gml:coord>' +
-      '        <gml:X>4</gml:X>' +
-      '        <gml:Y>5</gml:Y>' +
+      '        <gml:X>4.0</gml:X>' +
+      '        <gml:Y>5.0</gml:Y>' +
       '      </gml:coord>' +
       '      <gml:coord>' +
-      '        <gml:X>6</gml:X>' +
-      '        <gml:Y>7</gml:Y>' +
+      '        <gml:X>6.0</gml:X>' +
+      '        <gml:Y>7.0</gml:Y>' +
       '      </gml:coord>' +
       '      <gml:coord>' +
-      '        <gml:X>2</gml:X>' +
-      '        <gml:Y>3</gml:Y>' +
+      '        <gml:X>2.0</gml:X>' +
+      '        <gml:Y>3.0</gml:Y>' +
       '      </gml:coord>' +
       '    </gml:LinearRing>' +
       '  </gml:innerBoundaryIs>' +
       '  <gml:innerBoundaryIs>' +
       '    <gml:LinearRing>' +
       '      <gml:coord>' +
-      '        <gml:X>3</gml:X>' +
-      '        <gml:Y>4</gml:Y>' +
+      '        <gml:X>3.0</gml:X>' +
+      '        <gml:Y>4.0</gml:Y>' +
       '      </gml:coord>' +
       '      <gml:coord>' +
-      '        <gml:X>5</gml:X>' +
-      '        <gml:Y>6</gml:Y>' +
+      '        <gml:X>5.0</gml:X>' +
+      '        <gml:Y>6.0</gml:Y>' +
       '      </gml:coord>' +
       '      <gml:coord>' +
-      '        <gml:X>7</gml:X>' +
-      '        <gml:Y>8</gml:Y>' +
+      '        <gml:X>7.0</gml:X>' +
+      '        <gml:Y>8.0</gml:Y>' +
       '      </gml:coord>' +
       '      <gml:coord>' +
-      '        <gml:X>3</gml:X>' +
-      '        <gml:Y>4</gml:Y>' +
+      '        <gml:X>3.0</gml:X>' +
+      '        <gml:Y>4.0</gml:Y>' +
       '      </gml:coord>' +
       '    </gml:LinearRing>' +
       '  </gml:innerBoundaryIs>' +
       '</gml:Polygon>';
-
 
       var format = L.TileLayer.WMS.Format['application/vnd.ogc.gml'];
       var point = format.toGeoJSON(responseText);
@@ -103,72 +102,72 @@ describe('L.TileLayer.WMS.Format[\'application/vnd.ogc.gml\']', function () {
       '  <gml:outerBoundaryIs>' +
       '    <gml:LinearRing>' +
       '      <gml:coord>' +
-      '        <gml:X>1</gml:X>' +
-      '        <gml:Y>2</gml:Y>' +
-      '        <gml:Z>2</gml:Z>' +
+      '        <gml:X>1.0</gml:X>' +
+      '        <gml:Y>2.0</gml:Y>' +
+      '        <gml:Z>2.0</gml:Z>' +
       '      </gml:coord>' +
       '      <gml:coord>' +
-      '        <gml:X>3</gml:X>' +
-      '        <gml:Y>4</gml:Y>' +
-      '        <gml:Z>2</gml:Z>' +
+      '        <gml:X>3.0</gml:X>' +
+      '        <gml:Y>4.0</gml:Y>' +
+      '        <gml:Z>2.0</gml:Z>' +
       '      </gml:coord>' +
       '      <gml:coord>' +
-      '        <gml:X>5</gml:X>' +
-      '        <gml:Y>6</gml:Y>' +
-      '        <gml:Z>2</gml:Z>' +
+      '        <gml:X>5.0</gml:X>' +
+      '        <gml:Y>6.0</gml:Y>' +
+      '        <gml:Z>2.0</gml:Z>' +
       '      </gml:coord>' +
       '      <gml:coord>' +
-      '        <gml:X>1</gml:X>' +
-      '        <gml:Y>2</gml:Y>' +
-      '        <gml:Z>2</gml:Z>' +
+      '        <gml:X>1.0</gml:X>' +
+      '        <gml:Y>2.0</gml:Y>' +
+      '        <gml:Z>2.0</gml:Z>' +
       '      </gml:coord>' +
       '    </gml:LinearRing>' +
       '  </gml:outerBoundaryIs>' +
       '  <gml:innerBoundaryIs>' +
       '    <gml:LinearRing>' +
       '      <gml:coord>' +
-      '        <gml:X>2</gml:X>' +
-      '        <gml:Y>3</gml:Y>' +
-      '        <gml:Z>2</gml:Z>' +
+      '        <gml:X>2.0</gml:X>' +
+      '        <gml:Y>3.0</gml:Y>' +
+      '        <gml:Z>2.0</gml:Z>' +
       '      </gml:coord>' +
       '      <gml:coord>' +
-      '        <gml:X>4</gml:X>' +
-      '        <gml:Y>5</gml:Y>' +
-      '        <gml:Z>2</gml:Z>' +
+      '        <gml:X>4.0</gml:X>' +
+      '        <gml:Y>5.0</gml:Y>' +
+      '        <gml:Z>2.0</gml:Z>' +
       '      </gml:coord>' +
       '      <gml:coord>' +
-      '        <gml:X>6</gml:X>' +
-      '        <gml:Y>7</gml:Y>' +
-      '        <gml:Z>2</gml:Z>' +
+      '        <gml:X>6.0</gml:X>' +
+      '        <gml:Y>7.0</gml:Y>' +
+      '        <gml:Z>2.0</gml:Z>' +
       '      </gml:coord>' +
       '      <gml:coord>' +
-      '        <gml:X>2</gml:X>' +
-      '        <gml:Y>3</gml:Y>' +
-      '        <gml:Z>2</gml:Z>' +
+      '        <gml:X>2.0</gml:X>' +
+      '        <gml:Y>3.0</gml:Y>' +
+      '        <gml:Z>2.0</gml:Z>' +
       '      </gml:coord>' +
       '    </gml:LinearRing>' +
       '  </gml:innerBoundaryIs>' +
       '  <gml:innerBoundaryIs>' +
       '    <gml:LinearRing>' +
       '      <gml:coord>' +
-      '        <gml:X>3</gml:X>' +
-      '        <gml:Y>4</gml:Y>' +
-      '        <gml:Z>2</gml:Z>' +
+      '        <gml:X>3.0</gml:X>' +
+      '        <gml:Y>4.0</gml:Y>' +
+      '        <gml:Z>2.0</gml:Z>' +
       '      </gml:coord>' +
       '      <gml:coord>' +
-      '        <gml:X>5</gml:X>' +
-      '        <gml:Y>6</gml:Y>' +
-      '        <gml:Z>2</gml:Z>' +
+      '        <gml:X>5.0</gml:X>' +
+      '        <gml:Y>6.0</gml:Y>' +
+      '        <gml:Z>2.0</gml:Z>' +
       '      </gml:coord>' +
       '      <gml:coord>' +
-      '        <gml:X>7</gml:X>' +
-      '        <gml:Y>8</gml:Y>' +
-      '        <gml:Z>2</gml:Z>' +
+      '        <gml:X>7.0</gml:X>' +
+      '        <gml:Y>8.0</gml:Y>' +
+      '        <gml:Z>2.0</gml:Z>' +
       '      </gml:coord>' +
       '      <gml:coord>' +
-      '        <gml:X>3</gml:X>' +
-      '        <gml:Y>4</gml:Y>' +
-      '        <gml:Z>2</gml:Z>' +
+      '        <gml:X>3.0</gml:X>' +
+      '        <gml:Y>4.0</gml:Y>' +
+      '        <gml:Z>2.0</gml:Z>' +
       '      </gml:coord>' +
       '    </gml:LinearRing>' +
       '  </gml:innerBoundaryIs>' +

@@ -792,7 +792,7 @@ L.TileLayer.WMS.Format['application/vnd.ogc.gml/3.1.1'] = {
     'gml:LinearRing': {
       toGeoJSON: function(linearRingElement) {
         // LinearRing coordinates are represented by the same structure as LineString, but first & last coordinate are always equal.
-        return gmlElement['gml:lineString'].toGeoJSON(linearRingElement).coordinates;
+        return gmlElement['gml:LineString'].toGeoJSON(linearRingElement).coordinates;
       }
     },
 
@@ -804,23 +804,23 @@ L.TileLayer.WMS.Format['application/vnd.ogc.gml/3.1.1'] = {
         };
 
         // Exterior linear ring coordinates can be represented as single <gml:exterior> or <gml:outerBoundaryIs> elements.
-        var exteriorLinearRingElements = polygonElement.getElementsByTagNameNS(namespaces.gml, 'exterior');
-        if (exteriorLinearRingElements.length === 0) {
-          exteriorLinearRingElements = polygonElement.getElementsByTagNameNS(namespaces.gml, 'outerBoundaryIs');
+        var exteriorElements = polygonElement.getElementsByTagNameNS(namespaces.gml, 'exterior');
+        if (exteriorElements.length === 0) {
+          exteriorElements = polygonElement.getElementsByTagNameNS(namespaces.gml, 'outerBoundaryIs');
         }
         
-        var exteriorLinearRingElement = exteriorLinearRingElements[0];
+        var exteriorLinearRingElement = exteriorElements[0].getElementsByTagNameNS(namespaces.gml, 'LinearRing')[0];
         var exteriorLinearRingCoordinates = gmlElement.toGeoJSON(exteriorLinearRingElement);
         polygon.coordinates.push(exteriorLinearRingCoordinates);
 
         // Interior linear ring coordinates can be represented as multiple <gml:interior> or <gml:innerBoundaryIs> elements.
-        var interiorLinearRingElements = polygonElement.getElementsByTagNameNS(namespaces.gml, 'interior');
-        if (interiorLinearRingElements.length === 0) {
-          interiorLinearRingElements = polygonElement.getElementsByTagNameNS(namespaces.gml, 'innerBoundaryIs');
+        var interiorElements = polygonElement.getElementsByTagNameNS(namespaces.gml, 'interior');
+        if (interiorElements.length === 0) {
+          interiorElements = polygonElement.getElementsByTagNameNS(namespaces.gml, 'innerBoundaryIs');
         }
 
-        for (var i = 0, len = interiorLinearRingElements.length; i < len; i++) {
-          var interiorLinearRingElement = interiorLinearRingElements[i];
+        for (var i = 0, len = interiorElements.length; i < len; i++) {
+          var interiorLinearRingElement = interiorElements[i].getElementsByTagNameNS(namespaces.gml, 'LinearRing')[0];
           var interiorLinearRingCoordinates = gmlElement.toGeoJSON(interiorLinearRingElement);
           polygon.coordinates.push(interiorLinearRingCoordinates);
         }
