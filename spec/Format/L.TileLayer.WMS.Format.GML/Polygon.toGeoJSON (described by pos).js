@@ -147,5 +147,133 @@ describe('L.TileLayer.WMS.Format[\'application/vnd.ogc.gml\']', function () {
          [[3.0, 4.0, 2.0], [5.0, 6.0, 2.0], [7.0, 8.0, 2.0], [3.0, 4.0, 2.0]]]
       });
     });
+
+    it('parses gml:Polygon(exterior) described by gml:pos elements with two coordinates', function () {
+      var responseText = '' +
+      '<gml:Polygon>' +
+      '  <gml:exterior>' +
+      '    <gml:LinearRing>' +
+      '      <gml:pos>' +
+      '        1.0 2.0' +
+      '      </gml:pos>' +
+      '      <gml:pos>' +
+      '        3.0 4.0' +
+      '      </gml:pos>' +
+      '      <gml:pos>' +
+      '        5.0 6.0' +
+      '      </gml:pos>' +
+      '      <gml:pos>' +
+      '        1.0 2.0' +
+      '      </gml:pos>' +
+      '    </gml:LinearRing>' +
+      '  </gml:exterior>' +
+      '  <gml:interior>' +
+      '    <gml:LinearRing>' +
+      '      <gml:pos>' +
+      '        2.0 3.0' +
+      '      </gml:pos>' +
+      '      <gml:pos>' +
+      '        4.0 5.0' +
+      '      </gml:pos>' +
+      '      <gml:pos>' +
+      '        6.0 7.0' +
+      '      </gml:pos>' +
+      '      <gml:pos>' +
+      '        2.0 3.0' +
+      '      </gml:pos>' +
+      '    </gml:LinearRing>' +
+      '  </gml:interior>' +
+      '  <gml:interior>' +
+      '    <gml:LinearRing>' +
+      '      <gml:pos>' +
+      '        3.0 4.0' +
+      '      </gml:pos>' +
+      '      <gml:pos>' +
+      '        5.0 6.0' +
+      '      </gml:pos>' +
+      '      <gml:pos>' +
+      '        7.0 8.0' +
+      '      </gml:pos>' +
+      '      <gml:pos>' +
+      '        3.0 4.0' +
+      '      </gml:pos>' +
+      '    </gml:LinearRing>' +
+      '  </gml:interior>' +
+      '</gml:Polygon>';
+
+      var format = L.TileLayer.WMS.Format['application/vnd.ogc.gml'];
+      var point = format.toGeoJSON(responseText);
+
+      expect(point).to.be.deep.equal({
+        type: 'Polygon',
+        coordinates: [[[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [1.0, 2.0]],
+         [[2.0, 3.0], [4.0, 5.0], [6.0, 7.0], [2.0, 3.0]],
+         [[3.0, 4.0], [5.0, 6.0], [7.0, 8.0], [3.0, 4.0]]]
+      });
+    });
+
+    it('parses gml:Polygon(exterior) described by gml:pos elements with three coordinates', function () {
+      var responseText = '' +
+      '<gml:Polygon>' +
+      '  <gml:exterior>' +
+      '    <gml:LinearRing>' +
+      '      <gml:pos>' +
+      '        1.0 2.0 2.0' +
+      '      </gml:pos>' +
+      '      <gml:pos>' +
+      '        3.0 4.0 2.0' +
+      '      </gml:pos>' +
+      '      <gml:pos>' +
+      '        5.0 6.0 2.0' +
+      '      </gml:pos>' +
+      '      <gml:pos>' +
+      '        1.0 2.0 2.0' +
+      '      </gml:pos>' +
+      '    </gml:LinearRing>' +
+      '  </gml:exterior>' +
+      '  <gml:interior>' +
+      '    <gml:LinearRing>' +
+      '      <gml:pos>' +
+      '        2.0 3.0 2.0' +
+      '      </gml:pos>' +
+      '      <gml:pos>' +
+      '        4.0 5.0 2.0' +
+      '      </gml:pos>' +
+      '      <gml:pos>' +
+      '        6.0 7.0 2.0' +
+      '      </gml:pos>' +
+      '      <gml:pos>' +
+      '        2.0 3.0 2.0' +
+      '      </gml:pos>' +
+      '    </gml:LinearRing>' +
+      '  </gml:interior>' +
+      '  <gml:interior>' +
+      '    <gml:LinearRing>' +
+      '      <gml:pos>' +
+      '        3.0 4.0 2.0' +
+      '      </gml:pos>' +
+      '      <gml:pos>' +
+      '        5.0 6.0 2.0' +
+      '      </gml:pos>' +
+      '      <gml:pos>' +
+      '        7.0 8.0 2.0' +
+      '      </gml:pos>' +
+      '      <gml:pos>' +
+      '        3.0 4.0 2.0' +
+      '      </gml:pos>' +
+      '    </gml:LinearRing>' +
+      '  </gml:interior>' +
+      '</gml:Polygon>';
+
+      var format = L.TileLayer.WMS.Format['application/vnd.ogc.gml'];
+      var point = format.toGeoJSON(responseText);
+
+      expect(point).to.be.deep.equal({
+        type: 'Polygon',
+        coordinates: [[[1.0, 2.0, 2.0], [3.0, 4.0, 2.0], [5.0, 6.0, 2.0], [1.0, 2.0, 2.0]],
+         [[2.0, 3.0, 2.0], [4.0, 5.0, 2.0], [6.0, 7.0, 2.0], [2.0, 3.0, 2.0]],
+         [[3.0, 4.0, 2.0], [5.0, 6.0, 2.0], [7.0, 8.0, 2.0], [3.0, 4.0, 2.0]]]
+      });
+    });
   });
 });
