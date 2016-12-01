@@ -1,0 +1,6 @@
+{
+  "name": "Leaflet-WMS",
+  "tagline": "",
+  "body": "#Leaflet-WMS\r\n[![Build Status](https://travis-ci.org/Flexberry/Leaflet-WMS.svg?branch=master)](https://travis-ci.org/Flexberry/Leaflet-WMS)\r\n\r\nLeaflet plug-in containing extensions for L.TileLayer.WMS layers.\r\n\r\n#License\r\nMIT\r\n",
+  "note": "Don't delete this file! It's used internally to help with page regeneration."
+}
