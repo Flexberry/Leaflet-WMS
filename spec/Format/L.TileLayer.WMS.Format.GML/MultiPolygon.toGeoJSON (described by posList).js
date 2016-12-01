@@ -552,48 +552,52 @@ describe('L.TileLayer.WMS.Format[\'application/vnd.ogc.gml\']', function () {
       });
     });
 
-    it('parses gml:MultiPolygon(exterior) described by single gml:polygonMember & gml:posList elements with two coordinates & default srsDimension', function () {
-      var responseText = '' +
-      '<gml:MultiPolygon>' +
-      '  <gml:polygonMember>' +
-      '    <gml:Polygon>' +
-      '      <gml:exterior>' +
-      '        <gml:LinearRing>' +
-      '          <gml:posList>1.0 2.0 3.0 4.0 5.0 6.0 1.0 2.0</gml:posList>' +
-      '        </gml:LinearRing>' +
-      '      </gml:exterior>' +
-      '      <gml:interior>' +
-      '        <gml:LinearRing>' +
-      '          <gml:posList>2.0 3.0 4.0 5.0 6.0 7.0 2.0 3.0</gml:posList>' +
-      '        </gml:LinearRing>' +
-      '      </gml:interior>' +
-      '      <gml:interior>' +
-      '        <gml:LinearRing>' +
-      '          <gml:posList>3.0 4.0 5.0 6.0 7.0 8.0 3.0 4.0</gml:posList>' +
-      '        </gml:LinearRing>' +
-      '      </gml:interior>' +
-      '    </gml:Polygon>' +
-      '    <gml:Polygon>' +
-      '      <gml:exterior>' +
-      '        <gml:LinearRing>' +
-      '          <gml:posList>1.0 2.0 3.0 4.0 5.0 6.0 1.0 2.0</gml:posList>' +
-      '        </gml:LinearRing>' +
-      '      </gml:exterior>' +
-      '    </gml:Polygon>' +
-      '  </gml:polygonMember>' +
-      '</gml:MultiPolygon>';
+    it(
+      'parses gml:MultiPolygon(exterior) described by single gml:polygonMember & gml:posList elements ' +
+      'with two coordinates & default srsDimension',
+      function () {
+        var responseText = '' +
+        '<gml:MultiPolygon>' +
+        '  <gml:polygonMember>' +
+        '    <gml:Polygon>' +
+        '      <gml:exterior>' +
+        '        <gml:LinearRing>' +
+        '          <gml:posList>1.0 2.0 3.0 4.0 5.0 6.0 1.0 2.0</gml:posList>' +
+        '        </gml:LinearRing>' +
+        '      </gml:exterior>' +
+        '      <gml:interior>' +
+        '        <gml:LinearRing>' +
+        '          <gml:posList>2.0 3.0 4.0 5.0 6.0 7.0 2.0 3.0</gml:posList>' +
+        '        </gml:LinearRing>' +
+        '      </gml:interior>' +
+        '      <gml:interior>' +
+        '        <gml:LinearRing>' +
+        '          <gml:posList>3.0 4.0 5.0 6.0 7.0 8.0 3.0 4.0</gml:posList>' +
+        '        </gml:LinearRing>' +
+        '      </gml:interior>' +
+        '    </gml:Polygon>' +
+        '    <gml:Polygon>' +
+        '      <gml:exterior>' +
+        '        <gml:LinearRing>' +
+        '          <gml:posList>1.0 2.0 3.0 4.0 5.0 6.0 1.0 2.0</gml:posList>' +
+        '        </gml:LinearRing>' +
+        '      </gml:exterior>' +
+        '    </gml:Polygon>' +
+        '  </gml:polygonMember>' +
+        '</gml:MultiPolygon>';
 
-      var format = L.TileLayer.WMS.Format['application/vnd.ogc.gml'];
-      var point = format.toGeoJSON(responseText);
+        var format = L.TileLayer.WMS.Format['application/vnd.ogc.gml'];
+        var point = format.toGeoJSON(responseText);
 
-      expect(point).to.be.deep.equal({
-        type: 'MultiPolygon',
-        coordinates: [[[[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [1.0, 2.0]],
-         [[2.0, 3.0], [4.0, 5.0], [6.0, 7.0], [2.0, 3.0]],
-         [[3.0, 4.0], [5.0, 6.0], [7.0, 8.0], [3.0, 4.0]]],
-         [[[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [1.0, 2.0]]]]
-      });
-    });
+        expect(point).to.be.deep.equal({
+          type: 'MultiPolygon',
+          coordinates: [[[[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [1.0, 2.0]],
+           [[2.0, 3.0], [4.0, 5.0], [6.0, 7.0], [2.0, 3.0]],
+           [[3.0, 4.0], [5.0, 6.0], [7.0, 8.0], [3.0, 4.0]]],
+           [[[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [1.0, 2.0]]]]
+        });
+      }
+    );
 
     it('parses gml:MultiPolygon(exterior) described by single gml:polygonMember gml:posList elements with three coordinates', function () {
       var responseText = '' +
@@ -681,47 +685,51 @@ describe('L.TileLayer.WMS.Format[\'application/vnd.ogc.gml\']', function () {
       });
     });
 
-    it('parses gml:MultiPolygon(exterior) described by single gml:polygonMember gml:posList elements with three coordinates & dimension equals to 3', function () {
-      var responseText = '' +
-      '<gml:MultiPolygon>' +
-      '  <gml:polygonMember>' +
-      '    <gml:Polygon>' +
-      '      <gml:exterior>' +
-      '        <gml:LinearRing>' +
-      '          <gml:posList dimension="3">1.0 2.0 2.0 3.0 4.0 2.0 5.0 6.0 2.0 1.0 2.0 2.0</gml:posList>' +
-      '        </gml:LinearRing>' +
-      '      </gml:exterior>' +
-      '      <gml:interior>' +
-      '        <gml:LinearRing>' +
-      '          <gml:posList dimension="3">2.0 3.0 2.0 4.0 5.0 2.0 6.0 7.0 2.0 2.0 3.0 2.0</gml:posList>' +
-      '        </gml:LinearRing>' +
-      '      </gml:interior>' +
-      '      <gml:interior>' +
-      '        <gml:LinearRing>' +
-      '          <gml:posList dimension="3">3.0 4.0 2.0 5.0 6.0 2.0 7.0 8.0 2.0 3.0 4.0 2.0</gml:posList>' +
-      '        </gml:LinearRing>' +
-      '      </gml:interior>' +
-      '    </gml:Polygon>' +
-      '    <gml:Polygon>' +
-      '      <gml:exterior>' +
-      '        <gml:LinearRing>' +
-      '          <gml:posList dimension="3">1.0 2.0 2.0 3.0 4.0 2.0 5.0 6.0 2.0 1.0 2.0 2.0</gml:posList>' +
-      '        </gml:LinearRing>' +
-      '      </gml:exterior>' +
-      '    </gml:Polygon>' +
-      '  </gml:polygonMember>' +
-      '</gml:MultiPolygon>';
+    it(
+      'parses gml:MultiPolygon(exterior) described by single gml:polygonMember gml:posList elements ' +
+      'with three coordinates & dimension equals to 3',
+      function () {
+        var responseText = '' +
+        '<gml:MultiPolygon>' +
+        '  <gml:polygonMember>' +
+        '    <gml:Polygon>' +
+        '      <gml:exterior>' +
+        '        <gml:LinearRing>' +
+        '          <gml:posList dimension="3">1.0 2.0 2.0 3.0 4.0 2.0 5.0 6.0 2.0 1.0 2.0 2.0</gml:posList>' +
+        '        </gml:LinearRing>' +
+        '      </gml:exterior>' +
+        '      <gml:interior>' +
+        '        <gml:LinearRing>' +
+        '          <gml:posList dimension="3">2.0 3.0 2.0 4.0 5.0 2.0 6.0 7.0 2.0 2.0 3.0 2.0</gml:posList>' +
+        '        </gml:LinearRing>' +
+        '      </gml:interior>' +
+        '      <gml:interior>' +
+        '        <gml:LinearRing>' +
+        '          <gml:posList dimension="3">3.0 4.0 2.0 5.0 6.0 2.0 7.0 8.0 2.0 3.0 4.0 2.0</gml:posList>' +
+        '        </gml:LinearRing>' +
+        '      </gml:interior>' +
+        '    </gml:Polygon>' +
+        '    <gml:Polygon>' +
+        '      <gml:exterior>' +
+        '        <gml:LinearRing>' +
+        '          <gml:posList dimension="3">1.0 2.0 2.0 3.0 4.0 2.0 5.0 6.0 2.0 1.0 2.0 2.0</gml:posList>' +
+        '        </gml:LinearRing>' +
+        '      </gml:exterior>' +
+        '    </gml:Polygon>' +
+        '  </gml:polygonMember>' +
+        '</gml:MultiPolygon>';
 
-      var format = L.TileLayer.WMS.Format['application/vnd.ogc.gml'];
-      var point = format.toGeoJSON(responseText);
+        var format = L.TileLayer.WMS.Format['application/vnd.ogc.gml'];
+        var point = format.toGeoJSON(responseText);
 
-      expect(point).to.be.deep.equal({
-        type: 'MultiPolygon',
-        coordinates: [[[[1.0, 2.0, 2.0], [3.0, 4.0, 2.0], [5.0, 6.0, 2.0], [1.0, 2.0, 2.0]],
-         [[2.0, 3.0, 2.0], [4.0, 5.0, 2.0], [6.0, 7.0, 2.0], [2.0, 3.0, 2.0]],
-         [[3.0, 4.0, 2.0], [5.0, 6.0, 2.0], [7.0, 8.0, 2.0], [3.0, 4.0, 2.0]]],
-         [[[1.0, 2.0, 2.0], [3.0, 4.0, 2.0], [5.0, 6.0, 2.0], [1.0, 2.0, 2.0]]]]
-      });
-    });
+        expect(point).to.be.deep.equal({
+          type: 'MultiPolygon',
+          coordinates: [[[[1.0, 2.0, 2.0], [3.0, 4.0, 2.0], [5.0, 6.0, 2.0], [1.0, 2.0, 2.0]],
+           [[2.0, 3.0, 2.0], [4.0, 5.0, 2.0], [6.0, 7.0, 2.0], [2.0, 3.0, 2.0]],
+           [[3.0, 4.0, 2.0], [5.0, 6.0, 2.0], [7.0, 8.0, 2.0], [3.0, 4.0, 2.0]]],
+           [[[1.0, 2.0, 2.0], [3.0, 4.0, 2.0], [5.0, 6.0, 2.0], [1.0, 2.0, 2.0]]]]
+        });
+      }
+    );
   });
 });
