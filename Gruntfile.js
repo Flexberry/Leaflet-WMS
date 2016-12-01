@@ -90,12 +90,15 @@ module.exports = function (grunt) {
       options: {
         configFile: 'karma.conf.js'
       },
+      develop: {
+        browsers: ['PhantomJS', 'Chrome']
+      },
       single: {
         singleRun: true,
         browsers: ['PhantomJS', 'Chrome']
       },
-      continuous: {
-        background: true,
+      travis: {
+        singleRun: true,
         browsers: ['PhantomJS']
       }
     },
@@ -134,6 +137,17 @@ module.exports = function (grunt) {
     'karma:single'
   ]);
 
-  // Watch tack with continuous tests running.
-  grunt.registerTask('develop', ['karma:continuous:start', 'watch']);
+  // Build grunt task for Travis.
+  grunt.registerTask('build', [
+    'jshint:scripts',
+    'jshint:spec',
+    'concat',
+    'uglify',
+    'clean:examples',
+    'copy:examples',
+    'karma:travis'
+  ]);
+
+  // Develop grunt task with watch for changes & continuous tests running.
+  grunt.registerTask('develop', ['karma:develop:start', 'watch']);
 };
