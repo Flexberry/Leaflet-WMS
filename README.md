@@ -158,4 +158,4 @@ map.on('click', function(e) {
 * [Basic](http://flexberry.github.io/Leaflet-WMS/examples/basic.html)
 
 #License
-[MIT](LICENSE)
+[MIT](https://github.com/Flexberry/Leaflet-WMS/blob/master/LICENSE.md)
