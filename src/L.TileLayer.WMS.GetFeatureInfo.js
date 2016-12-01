@@ -81,8 +81,8 @@ L.TileLayer.WMS.include({
           requestParamaters['bbox'] = version >= 1.3 && crs === L.CRS.EPSG4326 ?
             se.y + ',' + nw.x + ',' + nw.y + ',' + se.x :
             nw.x + ',' + se.y + ',' + se.x + ',' + nw.y;
-          requestParamaters[requestParamaters.version === '1.3.0' ? 'i' : 'x'] = point.x;
-          requestParamaters[requestParamaters.version === '1.3.0' ? 'j' : 'y'] = point.y;
+          requestParamaters[version >= 1.3 ? 'i' : 'x'] = point.x;
+          requestParamaters[version >= 1.3 ? 'j' : 'y'] = point.y;
         } catch(e) {
           fail(e);
 

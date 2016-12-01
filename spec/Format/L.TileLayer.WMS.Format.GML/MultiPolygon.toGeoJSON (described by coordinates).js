@@ -1,0 +1,583 @@
+describe('L.TileLayer.WMS.Format[\'application/vnd.ogc.gml\']', function () {
+  var originalXmlParse;
+
+  before(function() {
+    originalXmlParse = L.TileLayer.WMS.Util.XML.parse;
+
+    // Modify method to make possible to parse short GML strings.
+    L.TileLayer.WMS.Util.XML.parse = function(gmlString) {
+      var fullGmlString = '' +
+        '<?xml version="1.0" encoding="UTF-8"?>' +
+        '<root xmlns:gml="http://www.opengis.net/gml">' + gmlString + '</root>';
+
+      return originalXmlParse(fullGmlString).firstChild;
+    };
+  });
+
+  after(function() {
+    // Restore original method.
+    L.TileLayer.WMS.Util.XML.parse = originalXmlParse;
+  });
+
+  describe('#toGeoJSON', function () {
+    it('parses gml:MultiPolygon described by gml:coordinates elements with two coordinates', function () {
+      var responseText = '' +
+      '<gml:MultiPolygon>' +
+      '  <gml:polygonMember>' +
+      '    <gml:Polygon>' +
+      '      <gml:outerBoundaryIs>' +
+      '        <gml:LinearRing>' +
+      '          <gml:coordinates>1.0,2.0 3.0,4.0 5.0,6.0 1.0,2.0</gml:coordinates>' +
+      '        </gml:LinearRing>' +
+      '      </gml:outerBoundaryIs>' +
+      '      <gml:innerBoundaryIs>' +
+      '        <gml:LinearRing>' +
+      '          <gml:coordinates>2.0,3.0 4.0,5.0 6.0,7.0 2.0,3.0</gml:coordinates>' +
+      '        </gml:LinearRing>' +
+      '      </gml:innerBoundaryIs>' +
+      '      <gml:innerBoundaryIs>' +
+      '        <gml:LinearRing>' +
+      '          <gml:coordinates>3.0,4.0 5.0,6.0 7.0,8.0 3.0,4.0</gml:coordinates>' +
+      '        </gml:LinearRing>' +
+      '      </gml:innerBoundaryIs>' +
+      '    </gml:Polygon>' +
+      '  </gml:polygonMember>' +
+      '  <gml:polygonMember>' +
+      '    <gml:Polygon>' +
+      '      <gml:outerBoundaryIs>' +
+      '        <gml:LinearRing>' +
+      '          <gml:coordinates>1.0,2.0 3.0,4.0 5.0,6.0 1.0,2.0</gml:coordinates>' +
+      '        </gml:LinearRing>' +
+      '      </gml:outerBoundaryIs>' +
+      '    </gml:Polygon>' +
+      '  </gml:polygonMember>' +
+      '</gml:MultiPolygon>';
+
+      var format = L.TileLayer.WMS.Format['application/vnd.ogc.gml'];
+      var point = format.toGeoJSON(responseText);
+
+      expect(point).to.be.deep.equal({
+        type: 'MultiPolygon',
+        coordinates: [[[[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [1.0, 2.0]],
+         [[2.0, 3.0], [4.0, 5.0], [6.0, 7.0], [2.0, 3.0]],
+         [[3.0, 4.0], [5.0, 6.0], [7.0, 8.0], [3.0, 4.0]]],
+         [[[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [1.0, 2.0]]]]
+      });
+    });
+
+    it('parses gml:MultiPolygon described by gml:coordinates elements with three coordinates', function () {
+      var responseText = '' +
+      '<gml:MultiPolygon>' +
+      '  <gml:polygonMember>' +
+      '    <gml:Polygon>' +
+      '      <gml:outerBoundaryIs>' +
+      '        <gml:LinearRing>' +
+      '          <gml:coordinates>1.0,2.0,2.0 3.0,4.0,2.0 5.0,6.0,2.0 1.0,2.0,2.0</gml:coordinates>' +
+      '        </gml:LinearRing>' +
+      '      </gml:outerBoundaryIs>' +
+      '      <gml:innerBoundaryIs>' +
+      '        <gml:LinearRing>' +
+      '          <gml:coordinates>2.0,3.0,2.0 4.0,5.0,2.0 6.0,7.0,2.0 2.0,3.0,2.0</gml:coordinates>' +
+      '        </gml:LinearRing>' +
+      '      </gml:innerBoundaryIs>' +
+      '      <gml:innerBoundaryIs>' +
+      '        <gml:LinearRing>' +
+      '          <gml:coordinates>3.0,4.0,2.0 5.0,6.0,2.0 7.0,8.0,2.0 3.0,4.0,2.0</gml:coordinates>' +
+      '        </gml:LinearRing>' +
+      '      </gml:innerBoundaryIs>' +
+      '    </gml:Polygon>' +
+      '  </gml:polygonMember>' +
+      '  <gml:polygonMember>' +
+      '    <gml:Polygon>' +
+      '      <gml:outerBoundaryIs>' +
+      '        <gml:LinearRing>' +
+      '          <gml:coordinates>1.0,2.0,2.0 3.0,4.0,2.0 5.0,6.0,2.0 1.0,2.0,2.0</gml:coordinates>' +
+      '        </gml:LinearRing>' +
+      '      </gml:outerBoundaryIs>' +
+      '    </gml:Polygon>' +
+      '  </gml:polygonMember>' +
+      '</gml:MultiPolygon>';
+
+      var format = L.TileLayer.WMS.Format['application/vnd.ogc.gml'];
+      var point = format.toGeoJSON(responseText);
+
+      expect(point).to.be.deep.equal({
+        type: 'MultiPolygon',
+        coordinates: [[[[1.0, 2.0, 2.0], [3.0, 4.0, 2.0], [5.0, 6.0, 2.0], [1.0, 2.0, 2.0]],
+         [[2.0, 3.0, 2.0], [4.0, 5.0, 2.0], [6.0, 7.0, 2.0], [2.0, 3.0, 2.0]],
+         [[3.0, 4.0, 2.0], [5.0, 6.0, 2.0], [7.0, 8.0, 2.0], [3.0, 4.0, 2.0]]],
+         [[[1.0, 2.0, 2.0], [3.0, 4.0, 2.0], [5.0, 6.0, 2.0], [1.0, 2.0, 2.0]]]]
+      });
+    });
+
+    it('parses gml:MultiPolygon(exterior) described by gml:coordinates elements with two coordinates', function () {
+      var responseText = '' +
+      '<gml:MultiPolygon>' +
+      '  <gml:polygonMember>' +
+      '    <gml:Polygon>' +
+      '      <gml:exterior>' +
+      '        <gml:LinearRing>' +
+      '          <gml:coordinates>1.0,2.0 3.0,4.0 5.0,6.0 1.0,2.0</gml:coordinates>' +
+      '        </gml:LinearRing>' +
+      '      </gml:exterior>' +
+      '      <gml:interior>' +
+      '        <gml:LinearRing>' +
+      '          <gml:coordinates>2.0,3.0 4.0,5.0 6.0,7.0 2.0,3.0</gml:coordinates>' +
+      '        </gml:LinearRing>' +
+      '      </gml:interior>' +
+      '      <gml:interior>' +
+      '        <gml:LinearRing>' +
+      '          <gml:coordinates>3.0,4.0 5.0,6.0 7.0,8.0 3.0,4.0</gml:coordinates>' +
+      '        </gml:LinearRing>' +
+      '      </gml:interior>' +
+      '    </gml:Polygon>' +
+      '  </gml:polygonMember>' +
+      '  <gml:polygonMember>' +
+      '    <gml:Polygon>' +
+      '      <gml:exterior>' +
+      '        <gml:LinearRing>' +
+      '          <gml:coordinates>1.0,2.0 3.0,4.0 5.0,6.0 1.0,2.0</gml:coordinates>' +
+      '        </gml:LinearRing>' +
+      '      </gml:exterior>' +
+      '    </gml:Polygon>' +
+      '  </gml:polygonMember>' +
+      '</gml:MultiPolygon>';
+
+      var format = L.TileLayer.WMS.Format['application/vnd.ogc.gml'];
+      var point = format.toGeoJSON(responseText);
+
+      expect(point).to.be.deep.equal({
+        type: 'MultiPolygon',
+        coordinates: [[[[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [1.0, 2.0]],
+         [[2.0, 3.0], [4.0, 5.0], [6.0, 7.0], [2.0, 3.0]],
+         [[3.0, 4.0], [5.0, 6.0], [7.0, 8.0], [3.0, 4.0]]],
+         [[[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [1.0, 2.0]]]]
+      });
+    });
+
+    it('parses gml:MultiPolygon(exterior) described by gml:coordinates elements with three coordinates', function () {
+      var responseText = '' +
+      '<gml:MultiPolygon>' +
+      '  <gml:polygonMember>' +
+      '    <gml:Polygon>' +
+      '      <gml:exterior>' +
+      '        <gml:LinearRing>' +
+      '          <gml:coordinates>1.0,2.0,2.0 3.0,4.0,2.0 5.0,6.0,2.0 1.0,2.0,2.0</gml:coordinates>' +
+      '        </gml:LinearRing>' +
+      '      </gml:exterior>' +
+      '      <gml:interior>' +
+      '        <gml:LinearRing>' +
+      '          <gml:coordinates>2.0,3.0,2.0 4.0,5.0,2.0 6.0,7.0,2.0 2.0,3.0,2.0</gml:coordinates>' +
+      '        </gml:LinearRing>' +
+      '      </gml:interior>' +
+      '      <gml:interior>' +
+      '        <gml:LinearRing>' +
+      '          <gml:coordinates>3.0,4.0,2.0 5.0,6.0,2.0 7.0,8.0,2.0 3.0,4.0,2.0</gml:coordinates>' +
+      '        </gml:LinearRing>' +
+      '      </gml:interior>' +
+      '    </gml:Polygon>' +
+      '  </gml:polygonMember>' +
+      '  <gml:polygonMember>' +
+      '    <gml:Polygon>' +
+      '      <gml:exterior>' +
+      '        <gml:LinearRing>' +
+      '          <gml:coordinates>1.0,2.0,2.0 3.0,4.0,2.0 5.0,6.0,2.0 1.0,2.0,2.0</gml:coordinates>' +
+      '        </gml:LinearRing>' +
+      '      </gml:exterior>' +
+      '    </gml:Polygon>' +
+      '  </gml:polygonMember>' +
+      '</gml:MultiPolygon>';
+
+      var format = L.TileLayer.WMS.Format['application/vnd.ogc.gml'];
+      var point = format.toGeoJSON(responseText);
+
+      expect(point).to.be.deep.equal({
+        type: 'MultiPolygon',
+        coordinates: [[[[1.0, 2.0, 2.0], [3.0, 4.0, 2.0], [5.0, 6.0, 2.0], [1.0, 2.0, 2.0]],
+         [[2.0, 3.0, 2.0], [4.0, 5.0, 2.0], [6.0, 7.0, 2.0], [2.0, 3.0, 2.0]],
+         [[3.0, 4.0, 2.0], [5.0, 6.0, 2.0], [7.0, 8.0, 2.0], [3.0, 4.0, 2.0]]],
+         [[[1.0, 2.0, 2.0], [3.0, 4.0, 2.0], [5.0, 6.0, 2.0], [1.0, 2.0, 2.0]]]]
+      });
+    });
+
+    it('parses gml:MultiPolygon described by multiple gml:coordinates element with custom separators', function () {
+      var responseText = '' +
+      '<gml:MultiPolygon>' +
+      '  <gml:polygonMember>' +
+      '    <gml:Polygon>' +
+      '      <gml:outerBoundaryIs>' +
+      '        <gml:LinearRing>' +
+      '          <gml:coordinates decimal="," cs="-" ts="|">' +
+      '            1,0 - 2,0 - 2,0 | 3,0 - 4,0 - 2,0 | 5,0 - 6,0 - 2,0 | 1,0 - 2,0 - 2,0' +
+      '          </gml:coordinates>' +
+      '        </gml:LinearRing>' +
+      '      </gml:outerBoundaryIs>' +
+      '      <gml:innerBoundaryIs>' +
+      '        <gml:LinearRing>' +
+      '          <gml:coordinates decimal="," cs="-" ts="|">' +
+      '            2,0 - 3,0 - 2,0 | 4,0 - 5,0 - 2,0 | 6,0 - 7,0 - 2,0 | 2,0 - 3,0 - 2,0' +
+      '          </gml:coordinates>' +
+      '        </gml:LinearRing>' +
+      '      </gml:innerBoundaryIs>' +
+      '      <gml:innerBoundaryIs>' +
+      '        <gml:LinearRing>' +
+      '          <gml:coordinates decimal="," cs="-" ts="|">' +
+      '            3,0 - 4,0 - 2,0 | 5,0 - 6,0 - 2,0 | 7,0 - 8,0 - 2,0 | 3,0 - 4,0 - 2,0' +
+      '          </gml:coordinates>' +
+      '        </gml:LinearRing>' +
+      '      </gml:innerBoundaryIs>' +
+      '    </gml:Polygon>' +
+      '  </gml:polygonMember>' +
+      '  <gml:polygonMember>' +
+      '    <gml:Polygon>' +
+      '      <gml:outerBoundaryIs>' +
+      '        <gml:LinearRing>' +
+      '          <gml:coordinates decimal="," cs="-" ts="|">' +
+      '            1,0 - 2,0 - 2,0 | 3,0 - 4,0 - 2,0 | 5,0 - 6,0 - 2,0 | 1,0 - 2,0 - 2,0' +
+      '          </gml:coordinates>' +
+      '        </gml:LinearRing>' +
+      '      </gml:outerBoundaryIs>' +
+      '    </gml:Polygon>' +
+      '  </gml:polygonMember>' +
+      '</gml:MultiPolygon>';
+
+      var format = L.TileLayer.WMS.Format['application/vnd.ogc.gml'];
+      var point = format.toGeoJSON(responseText);
+
+      expect(point).to.be.deep.equal({
+        type: 'MultiPolygon',
+        coordinates: [[[[1.0, 2.0, 2.0], [3.0, 4.0, 2.0], [5.0, 6.0, 2.0], [1.0, 2.0, 2.0]],
+         [[2.0, 3.0, 2.0], [4.0, 5.0, 2.0], [6.0, 7.0, 2.0], [2.0, 3.0, 2.0]],
+         [[3.0, 4.0, 2.0], [5.0, 6.0, 2.0], [7.0, 8.0, 2.0], [3.0, 4.0, 2.0]]],
+         [[[1.0, 2.0, 2.0], [3.0, 4.0, 2.0], [5.0, 6.0, 2.0], [1.0, 2.0, 2.0]]]]
+      });
+    });
+
+    it('parses gml:MultiPolygon described by single gml:polygonMember & gml:coordinates elements with custom separators', function () {
+      var responseText = '' +
+      '<gml:MultiPolygon>' +
+      '  <gml:polygonMember>' +
+      '    <gml:Polygon>' +
+      '      <gml:outerBoundaryIs>' +
+      '        <gml:LinearRing>' +
+      '          <gml:coordinates decimal="," cs="-" ts="|">' +
+      '            1,0 - 2,0 - 2,0 | 3,0 - 4,0 - 2,0 | 5,0 - 6,0 - 2,0 | 1,0 - 2,0 - 2,0' +
+      '          </gml:coordinates>' +
+      '        </gml:LinearRing>' +
+      '      </gml:outerBoundaryIs>' +
+      '      <gml:innerBoundaryIs>' +
+      '        <gml:LinearRing>' +
+      '          <gml:coordinates decimal="," cs="-" ts="|">' +
+      '            2,0 - 3,0 - 2,0 | 4,0 - 5,0 - 2,0 | 6,0 - 7,0 - 2,0 | 2,0 - 3,0 - 2,0' +
+      '          </gml:coordinates>' +
+      '        </gml:LinearRing>' +
+      '      </gml:innerBoundaryIs>' +
+      '      <gml:innerBoundaryIs>' +
+      '        <gml:LinearRing>' +
+      '          <gml:coordinates decimal="," cs="-" ts="|">' +
+      '            3,0 - 4,0 - 2,0 | 5,0 - 6,0 - 2,0 | 7,0 - 8,0 - 2,0 | 3,0 - 4,0 - 2,0' +
+      '          </gml:coordinates>' +
+      '        </gml:LinearRing>' +
+      '      </gml:innerBoundaryIs>' +
+      '    </gml:Polygon>' +
+      '    <gml:Polygon>' +
+      '      <gml:outerBoundaryIs>' +
+      '        <gml:LinearRing>' +
+      '          <gml:coordinates decimal="," cs="-" ts="|">' +
+      '            1,0 - 2,0 - 2,0 | 3,0 - 4,0 - 2,0 | 5,0 - 6,0 - 2,0 | 1,0 - 2,0 - 2,0' +
+      '          </gml:coordinates>' +
+      '        </gml:LinearRing>' +
+      '      </gml:outerBoundaryIs>' +
+      '    </gml:Polygon>' +
+      '  </gml:polygonMember>' +
+      '</gml:MultiPolygon>';
+
+      var format = L.TileLayer.WMS.Format['application/vnd.ogc.gml'];
+      var point = format.toGeoJSON(responseText);
+
+      expect(point).to.be.deep.equal({
+        type: 'MultiPolygon',
+        coordinates: [[[[1.0, 2.0, 2.0], [3.0, 4.0, 2.0], [5.0, 6.0, 2.0], [1.0, 2.0, 2.0]],
+         [[2.0, 3.0, 2.0], [4.0, 5.0, 2.0], [6.0, 7.0, 2.0], [2.0, 3.0, 2.0]],
+         [[3.0, 4.0, 2.0], [5.0, 6.0, 2.0], [7.0, 8.0, 2.0], [3.0, 4.0, 2.0]]],
+         [[[1.0, 2.0, 2.0], [3.0, 4.0, 2.0], [5.0, 6.0, 2.0], [1.0, 2.0, 2.0]]]]
+      });
+    });
+
+    it('parses gml:MultiPolygon described by single gml:polygonMember & gml:coordinates elements with two coordinates', function () {
+      var responseText = '' +
+      '<gml:MultiPolygon>' +
+      '  <gml:polygonMember>' +
+      '    <gml:Polygon>' +
+      '      <gml:outerBoundaryIs>' +
+      '        <gml:LinearRing>' +
+      '          <gml:coordinates>1.0,2.0 3.0,4.0 5.0,6.0 1.0,2.0</gml:coordinates>' +
+      '        </gml:LinearRing>' +
+      '      </gml:outerBoundaryIs>' +
+      '      <gml:innerBoundaryIs>' +
+      '        <gml:LinearRing>' +
+      '          <gml:coordinates>2.0,3.0 4.0,5.0 6.0,7.0 2.0,3.0</gml:coordinates>' +
+      '        </gml:LinearRing>' +
+      '      </gml:innerBoundaryIs>' +
+      '      <gml:innerBoundaryIs>' +
+      '        <gml:LinearRing>' +
+      '          <gml:coordinates>3.0,4.0 5.0,6.0 7.0,8.0 3.0,4.0</gml:coordinates>' +
+      '        </gml:LinearRing>' +
+      '      </gml:innerBoundaryIs>' +
+      '    </gml:Polygon>' +
+      '    <gml:Polygon>' +
+      '      <gml:outerBoundaryIs>' +
+      '        <gml:LinearRing>' +
+      '          <gml:coordinates>1.0,2.0 3.0,4.0 5.0,6.0 1.0,2.0</gml:coordinates>' +
+      '        </gml:LinearRing>' +
+      '      </gml:outerBoundaryIs>' +
+      '    </gml:Polygon>' +
+      '  </gml:polygonMember>' +
+      '</gml:MultiPolygon>';
+
+      var format = L.TileLayer.WMS.Format['application/vnd.ogc.gml'];
+      var point = format.toGeoJSON(responseText);
+
+      expect(point).to.be.deep.equal({
+        type: 'MultiPolygon',
+        coordinates: [[[[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [1.0, 2.0]],
+         [[2.0, 3.0], [4.0, 5.0], [6.0, 7.0], [2.0, 3.0]],
+         [[3.0, 4.0], [5.0, 6.0], [7.0, 8.0], [3.0, 4.0]]],
+         [[[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [1.0, 2.0]]]]
+      });
+    });
+
+    it('parses gml:MultiPolygon described by single gml:polygonMember gml:coordinates elements with three coordinates', function () {
+      var responseText = '' +
+      '<gml:MultiPolygon>' +
+      '  <gml:polygonMember>' +
+      '    <gml:Polygon>' +
+      '      <gml:outerBoundaryIs>' +
+      '        <gml:LinearRing>' +
+      '          <gml:coordinates>1.0,2.0,2.0 3.0,4.0,2.0 5.0,6.0,2.0 1.0,2.0,2.0</gml:coordinates>' +
+      '        </gml:LinearRing>' +
+      '      </gml:outerBoundaryIs>' +
+      '      <gml:innerBoundaryIs>' +
+      '        <gml:LinearRing>' +
+      '          <gml:coordinates>2.0,3.0,2.0 4.0,5.0,2.0 6.0,7.0,2.0 2.0,3.0,2.0</gml:coordinates>' +
+      '        </gml:LinearRing>' +
+      '      </gml:innerBoundaryIs>' +
+      '      <gml:innerBoundaryIs>' +
+      '        <gml:LinearRing>' +
+      '          <gml:coordinates>3.0,4.0,2.0 5.0,6.0,2.0 7.0,8.0,2.0 3.0,4.0,2.0</gml:coordinates>' +
+      '        </gml:LinearRing>' +
+      '      </gml:innerBoundaryIs>' +
+      '    </gml:Polygon>' +
+      '    <gml:Polygon>' +
+      '      <gml:outerBoundaryIs>' +
+      '        <gml:LinearRing>' +
+      '          <gml:coordinates>1.0,2.0,2.0 3.0,4.0,2.0 5.0,6.0,2.0 1.0,2.0,2.0</gml:coordinates>' +
+      '        </gml:LinearRing>' +
+      '      </gml:outerBoundaryIs>' +
+      '    </gml:Polygon>' +
+      '  </gml:polygonMember>' +
+      '</gml:MultiPolygon>';
+
+      var format = L.TileLayer.WMS.Format['application/vnd.ogc.gml'];
+      var point = format.toGeoJSON(responseText);
+
+      expect(point).to.be.deep.equal({
+        type: 'MultiPolygon',
+        coordinates: [[[[1.0, 2.0, 2.0], [3.0, 4.0, 2.0], [5.0, 6.0, 2.0], [1.0, 2.0, 2.0]],
+         [[2.0, 3.0, 2.0], [4.0, 5.0, 2.0], [6.0, 7.0, 2.0], [2.0, 3.0, 2.0]],
+         [[3.0, 4.0, 2.0], [5.0, 6.0, 2.0], [7.0, 8.0, 2.0], [3.0, 4.0, 2.0]]],
+         [[[1.0, 2.0, 2.0], [3.0, 4.0, 2.0], [5.0, 6.0, 2.0], [1.0, 2.0, 2.0]]]]
+      });
+    });
+
+    it('parses gml:MultiPolygon(exterior) described by multiple gml:coordinates element with custom separators', function () {
+      var responseText = '' +
+      '<gml:MultiPolygon>' +
+      '  <gml:polygonMember>' +
+      '    <gml:Polygon>' +
+      '      <gml:exterior>' +
+      '        <gml:LinearRing>' +
+      '          <gml:coordinates decimal="," cs="-" ts="|">' +
+      '            1,0 - 2,0 - 2,0 | 3,0 - 4,0 - 2,0 | 5,0 - 6,0 - 2,0 | 1,0 - 2,0 - 2,0' +
+      '          </gml:coordinates>' +
+      '        </gml:LinearRing>' +
+      '      </gml:exterior>' +
+      '      <gml:interior>' +
+      '        <gml:LinearRing>' +
+      '          <gml:coordinates decimal="," cs="-" ts="|">' +
+      '            2,0 - 3,0 - 2,0 | 4,0 - 5,0 - 2,0 | 6,0 - 7,0 - 2,0 | 2,0 - 3,0 - 2,0' +
+      '          </gml:coordinates>' +
+      '        </gml:LinearRing>' +
+      '      </gml:interior>' +
+      '      <gml:interior>' +
+      '        <gml:LinearRing>' +
+      '          <gml:coordinates decimal="," cs="-" ts="|">' +
+      '            3,0 - 4,0 - 2,0 | 5,0 - 6,0 - 2,0 | 7,0 - 8,0 - 2,0 | 3,0 - 4,0 - 2,0' +
+      '          </gml:coordinates>' +
+      '        </gml:LinearRing>' +
+      '      </gml:interior>' +
+      '    </gml:Polygon>' +
+      '  </gml:polygonMember>' +
+      '  <gml:polygonMember>' +
+      '    <gml:Polygon>' +
+      '      <gml:exterior>' +
+      '        <gml:LinearRing>' +
+      '          <gml:coordinates decimal="," cs="-" ts="|">' +
+      '            1,0 - 2,0 - 2,0 | 3,0 - 4,0 - 2,0 | 5,0 - 6,0 - 2,0 | 1,0 - 2,0 - 2,0' +
+      '          </gml:coordinates>' +
+      '        </gml:LinearRing>' +
+      '      </gml:exterior>' +
+      '    </gml:Polygon>' +
+      '  </gml:polygonMember>' +
+      '</gml:MultiPolygon>';
+
+      var format = L.TileLayer.WMS.Format['application/vnd.ogc.gml'];
+      var point = format.toGeoJSON(responseText);
+
+      expect(point).to.be.deep.equal({
+        type: 'MultiPolygon',
+        coordinates: [[[[1.0, 2.0, 2.0], [3.0, 4.0, 2.0], [5.0, 6.0, 2.0], [1.0, 2.0, 2.0]],
+         [[2.0, 3.0, 2.0], [4.0, 5.0, 2.0], [6.0, 7.0, 2.0], [2.0, 3.0, 2.0]],
+         [[3.0, 4.0, 2.0], [5.0, 6.0, 2.0], [7.0, 8.0, 2.0], [3.0, 4.0, 2.0]]],
+         [[[1.0, 2.0, 2.0], [3.0, 4.0, 2.0], [5.0, 6.0, 2.0], [1.0, 2.0, 2.0]]]]
+      });
+    });
+
+    it('parses gml:MultiPolygon(exterior) described by single gml:polygonMember & gml:coordinates elements with custom separators', function () {
+      var responseText = '' +
+      '<gml:MultiPolygon>' +
+      '  <gml:polygonMember>' +
+      '    <gml:Polygon>' +
+      '      <gml:exterior>' +
+      '        <gml:LinearRing>' +
+      '          <gml:coordinates decimal="," cs="-" ts="|">' +
+      '            1,0 - 2,0 - 2,0 | 3,0 - 4,0 - 2,0 | 5,0 - 6,0 - 2,0 | 1,0 - 2,0 - 2,0' +
+      '          </gml:coordinates>' +
+      '        </gml:LinearRing>' +
+      '      </gml:exterior>' +
+      '      <gml:interior>' +
+      '        <gml:LinearRing>' +
+      '          <gml:coordinates decimal="," cs="-" ts="|">' +
+      '            2,0 - 3,0 - 2,0 | 4,0 - 5,0 - 2,0 | 6,0 - 7,0 - 2,0 | 2,0 - 3,0 - 2,0' +
+      '          </gml:coordinates>' +
+      '        </gml:LinearRing>' +
+      '      </gml:interior>' +
+      '      <gml:interior>' +
+      '        <gml:LinearRing>' +
+      '          <gml:coordinates decimal="," cs="-" ts="|">' +
+      '            3,0 - 4,0 - 2,0 | 5,0 - 6,0 - 2,0 | 7,0 - 8,0 - 2,0 | 3,0 - 4,0 - 2,0' +
+      '          </gml:coordinates>' +
+      '        </gml:LinearRing>' +
+      '      </gml:interior>' +
+      '    </gml:Polygon>' +
+      '    <gml:Polygon>' +
+      '      <gml:exterior>' +
+      '        <gml:LinearRing>' +
+      '          <gml:coordinates decimal="," cs="-" ts="|">' +
+      '            1,0 - 2,0 - 2,0 | 3,0 - 4,0 - 2,0 | 5,0 - 6,0 - 2,0 | 1,0 - 2,0 - 2,0' +
+      '          </gml:coordinates>' +
+      '        </gml:LinearRing>' +
+      '      </gml:exterior>' +
+      '    </gml:Polygon>' +
+      '  </gml:polygonMember>' +
+      '</gml:MultiPolygon>';
+
+      var format = L.TileLayer.WMS.Format['application/vnd.ogc.gml'];
+      var point = format.toGeoJSON(responseText);
+
+      expect(point).to.be.deep.equal({
+        type: 'MultiPolygon',
+        coordinates: [[[[1.0, 2.0, 2.0], [3.0, 4.0, 2.0], [5.0, 6.0, 2.0], [1.0, 2.0, 2.0]],
+         [[2.0, 3.0, 2.0], [4.0, 5.0, 2.0], [6.0, 7.0, 2.0], [2.0, 3.0, 2.0]],
+         [[3.0, 4.0, 2.0], [5.0, 6.0, 2.0], [7.0, 8.0, 2.0], [3.0, 4.0, 2.0]]],
+         [[[1.0, 2.0, 2.0], [3.0, 4.0, 2.0], [5.0, 6.0, 2.0], [1.0, 2.0, 2.0]]]]
+      });
+    });
+
+    it('parses gml:MultiPolygon(exterior) described by single gml:polygonMember & gml:coordinates elements with two coordinates', function () {
+      var responseText = '' +
+      '<gml:MultiPolygon>' +
+      '  <gml:polygonMember>' +
+      '    <gml:Polygon>' +
+      '      <gml:exterior>' +
+      '        <gml:LinearRing>' +
+      '          <gml:coordinates>1.0,2.0 3.0,4.0 5.0,6.0 1.0,2.0</gml:coordinates>' +
+      '        </gml:LinearRing>' +
+      '      </gml:exterior>' +
+      '      <gml:interior>' +
+      '        <gml:LinearRing>' +
+      '          <gml:coordinates>2.0,3.0 4.0,5.0 6.0,7.0 2.0,3.0</gml:coordinates>' +
+      '        </gml:LinearRing>' +
+      '      </gml:interior>' +
+      '      <gml:interior>' +
+      '        <gml:LinearRing>' +
+      '          <gml:coordinates>3.0,4.0 5.0,6.0 7.0,8.0 3.0,4.0</gml:coordinates>' +
+      '        </gml:LinearRing>' +
+      '      </gml:interior>' +
+      '    </gml:Polygon>' +
+      '    <gml:Polygon>' +
+      '      <gml:exterior>' +
+      '        <gml:LinearRing>' +
+      '          <gml:coordinates>1.0,2.0 3.0,4.0 5.0,6.0 1.0,2.0</gml:coordinates>' +
+      '        </gml:LinearRing>' +
+      '      </gml:exterior>' +
+      '    </gml:Polygon>' +
+      '  </gml:polygonMember>' +
+      '</gml:MultiPolygon>';
+
+      var format = L.TileLayer.WMS.Format['application/vnd.ogc.gml'];
+      var point = format.toGeoJSON(responseText);
+
+      expect(point).to.be.deep.equal({
+        type: 'MultiPolygon',
+        coordinates: [[[[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [1.0, 2.0]],
+         [[2.0, 3.0], [4.0, 5.0], [6.0, 7.0], [2.0, 3.0]],
+         [[3.0, 4.0], [5.0, 6.0], [7.0, 8.0], [3.0, 4.0]]],
+         [[[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [1.0, 2.0]]]]
+      });
+    });
+
+    it('parses gml:MultiPolygon(exterior) described by single gml:polygonMember gml:coordinates elements with three coordinates', function () {
+      var responseText = '' +
+      '<gml:MultiPolygon>' +
+      '  <gml:polygonMember>' +
+      '    <gml:Polygon>' +
+      '      <gml:exterior>' +
+      '        <gml:LinearRing>' +
+      '          <gml:coordinates>1.0,2.0,2.0 3.0,4.0,2.0 5.0,6.0,2.0 1.0,2.0,2.0</gml:coordinates>' +
+      '        </gml:LinearRing>' +
+      '      </gml:exterior>' +
+      '      <gml:interior>' +
+      '        <gml:LinearRing>' +
+      '          <gml:coordinates>2.0,3.0,2.0 4.0,5.0,2.0 6.0,7.0,2.0 2.0,3.0,2.0</gml:coordinates>' +
+      '        </gml:LinearRing>' +
+      '      </gml:interior>' +
+      '      <gml:interior>' +
+      '        <gml:LinearRing>' +
+      '          <gml:coordinates>3.0,4.0,2.0 5.0,6.0,2.0 7.0,8.0,2.0 3.0,4.0,2.0</gml:coordinates>' +
+      '        </gml:LinearRing>' +
+      '      </gml:interior>' +
+      '    </gml:Polygon>' +
+      '    <gml:Polygon>' +
+      '      <gml:exterior>' +
+      '        <gml:LinearRing>' +
+      '          <gml:coordinates>1.0,2.0,2.0 3.0,4.0,2.0 5.0,6.0,2.0 1.0,2.0,2.0</gml:coordinates>' +
+      '        </gml:LinearRing>' +
+      '      </gml:exterior>' +
+      '    </gml:Polygon>' +
+      '  </gml:polygonMember>' +
+      '</gml:MultiPolygon>';
+
+      var format = L.TileLayer.WMS.Format['application/vnd.ogc.gml'];
+      var point = format.toGeoJSON(responseText);
+
+      expect(point).to.be.deep.equal({
+        type: 'MultiPolygon',
+        coordinates: [[[[1.0, 2.0, 2.0], [3.0, 4.0, 2.0], [5.0, 6.0, 2.0], [1.0, 2.0, 2.0]],
+         [[2.0, 3.0, 2.0], [4.0, 5.0, 2.0], [6.0, 7.0, 2.0], [2.0, 3.0, 2.0]],
+         [[3.0, 4.0, 2.0], [5.0, 6.0, 2.0], [7.0, 8.0, 2.0], [3.0, 4.0, 2.0]]],
+         [[[1.0, 2.0, 2.0], [3.0, 4.0, 2.0], [5.0, 6.0, 2.0], [1.0, 2.0, 2.0]]]]
+      });
+    });
+  });
+});
