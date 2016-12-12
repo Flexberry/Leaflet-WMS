@@ -1,6 +1,7 @@
 L.TileLayer.WMS.include({
   getFeatureInfo: function(options) {
     options = L.Util.extend({
+      featureCount: 1,
       fail: function(errorThrown) {
         throw errorThrown;
       }
@@ -63,6 +64,8 @@ L.TileLayer.WMS.include({
           var nw = crs.project(mapBounds.getNorthWest());
           var se = crs.project(mapBounds.getSouthEast());
 
+          var featureCount = options.featureCount || 1;
+
           // Defined request parameters.
           requestParamaters = {
             request: 'GetFeatureInfo',
@@ -71,6 +74,7 @@ L.TileLayer.WMS.include({
             layers: _this.wmsParams.layers,
             query_layers: _this.wmsParams.layers,
             info_format: infoFormat,
+            feature_count: featureCount,
             height: size.y,
             width: size.x
           };

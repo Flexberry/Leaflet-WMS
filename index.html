@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="Leaflet-WMS : ">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Leaflet-WMS</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/Flexberry/Leaflet-WMS">View on GitHub</a>
+
+          <h1 id="project_title">Leaflet-WMS</h1>
+          <h2 id="project_tagline"></h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/Flexberry/Leaflet-WMS/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/Flexberry/Leaflet-WMS/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>
+<a id="leaflet-wms" class="anchor" href="#leaflet-wms" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Leaflet-WMS</h1>
+
+<p><a href="https://travis-ci.org/Flexberry/Leaflet-WMS"><img src="https://img.shields.io/travis/Flexberry/Leaflet-WMS/master.svg?label=master%20build%20" alt="Travis master branch"></a>
+<a href="https://travis-ci.org/Flexberry/Leaflet-WMS/branches"><img src="https://img.shields.io/travis/Flexberry/Leaflet-WMS/develop.svg?label=develop%20build" alt="Travis develop branch"></a>
+<a href="https://github.com/orangemug/stability-badges#stability-stable-green"><img src="https://img.shields.io/badge/stability-stable-green.svg" alt="stability-stable"></a></p>
+
+<p>OGC WMS client layer for <a href="http://leafletjs.com">leaflet</a>.
+Adds <a href="http://docs.geoserver.org/latest/en/user/services/wms/reference.html#getfeatureinfo">GetFeatureInfo</a> requests support to leaflet's <a href="http://leafletjs.com/reference-1.0.2.html#tilelayer-wms">L.TileLayer.WMS</a> layer.
+Supports parsing of <a href="http://docs.geoserver.org/latest/en/user/services/wms/reference.html#getfeatureinfo">GetFeatureInfo</a> responses into <a href="http://geojson.org/geojson-spec.html">GeoJSON</a> format from a variety of other formats.</p>
+
+<h1>
+<a id="methods" class="anchor" href="#methods" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Methods</h1>
+
+<h2>
+<a id="getcapabilities" class="anchor" href="#getcapabilities" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>getCapabilities</h2>
+
+<p>Performs <a href="http://docs.geoserver.org/latest/en/user/services/wms/reference.html#getcapabilities">GetCapabilities</a> request to WMS-service on which instance of leaflet's <a href="http://leafletjs.com/reference-1.0.2.html#tilelayer-wms">L.TileLayer.WMS</a> layer is configured.
+Returns <a href="https://developer.mozilla.org/en-US/docs/Web/API/element">element</a> representing received XML-document describing WMS-service capabilities.
+Real request will be perfermed only at first time call, all subsequent calls will return the cached document <a href="https://developer.mozilla.org/en-US/docs/Web/API/element">element</a>.</p>
+
+<h3>
+<a id="options" class="anchor" href="#options" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Options</h3>
+
+<table>
+<thead>
+<tr>
+<th>Option name</th>
+<th>Is required</th>
+<th>Default value</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>done</td>
+<td>false</td>
+<td>-</td>
+<td>Callback which will be called if request succeeds</td>
+</tr>
+<tr>
+<td>fail</td>
+<td>false</td>
+<td><code>function(errorThrown) {throw errorThrown;}</code></td>
+<td>Callback which will be called if request will fail</td>
+</tr>
+<tr>
+<td>always</td>
+<td>false</td>
+<td>-</td>
+<td>Callback which will be called regardless of whether request succeed or not</td>
+</tr>
+</tbody>
+</table>
+
+<h3>
+<a id="example" class="anchor" href="#example" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Example</h3>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-c">// Create leaflet map.</span>
+<span class="pl-k">var</span> map <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">L.Map</span>(<span class="pl-s"><span class="pl-pds">'</span>map<span class="pl-pds">'</span></span>).<span class="pl-en">setView</span>([<span class="pl-k">-</span><span class="pl-c1">41.59490508367679</span>, <span class="pl-c1">146.77734375000003</span>], <span class="pl-c1">7</span>);
+
+<span class="pl-c">// Create &amp; add OSM layer.</span>
+<span class="pl-k">var</span> osm <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">L.TileLayer</span>(<span class="pl-s"><span class="pl-pds">'</span>http://{s}.tile.osm.org/{z}/{x}/{y}.png<span class="pl-pds">'</span></span>).<span class="pl-en">addTo</span>(map);
+
+<span class="pl-c">// Create &amp; add WMS-layer.</span>
+<span class="pl-k">var</span> tasmania <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">L.TileLayer.WMS</span>(<span class="pl-s"><span class="pl-pds">'</span>http://demo.opengeo.org/geoserver/wms<span class="pl-pds">'</span></span>, {
+  layers<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>topp:tasmania<span class="pl-pds">'</span></span>,
+  format<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>image/png<span class="pl-pds">'</span></span>,
+  transparent<span class="pl-k">:</span> <span class="pl-c1">true</span>,
+  version<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>1.3.0<span class="pl-pds">'</span></span>,
+  crs<span class="pl-k">:</span> <span class="pl-c1">L</span>.<span class="pl-c1">CRS</span>.<span class="pl-c1">EPSG4326</span>
+}).<span class="pl-en">addTo</span>(map);
+
+<span class="pl-c">// Perform 'GetCapabilities' request.</span>
+<span class="pl-smi">tasmania</span>.<span class="pl-en">getCapabilities</span>({
+  <span class="pl-en">done</span><span class="pl-k">:</span> <span class="pl-k">function</span>(<span class="pl-smi">capabilities</span>) {
+  <span class="pl-en">console</span>.<span class="pl-c1">log</span>(<span class="pl-s"><span class="pl-pds">'</span>getCapabilitiessucceed: <span class="pl-pds">'</span></span>, capabilities);
+  },
+  <span class="pl-en">fail</span><span class="pl-k">:</span> <span class="pl-k">function</span>(<span class="pl-smi">errorThrown</span>) {
+  <span class="pl-en">console</span>.<span class="pl-c1">log</span>(<span class="pl-s"><span class="pl-pds">'</span>getCapabilitiesfailed: <span class="pl-pds">'</span></span>, errorThrown);
+  },
+  <span class="pl-en">always</span><span class="pl-k">:</span> <span class="pl-k">function</span>() {
+  <span class="pl-en">console</span>.<span class="pl-c1">log</span>(<span class="pl-s"><span class="pl-pds">'</span>getCapabilitiesfinished<span class="pl-pds">'</span></span>);
+  }
+});</pre></div>
+
+<h2>
+<a id="getinfoformat" class="anchor" href="#getinfoformat" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>getInfoFormat</h2>
+
+<p>Performs <a href="http://docs.geoserver.org/latest/en/user/services/wms/reference.html#getcapabilities">GetCapabilities</a> request to WMS-service on which instance of leaflet's <a href="http://leafletjs.com/reference-1.0.2.html#tilelayer-wms">L.TileLayer.WMS</a> layer is configured, analyzes formats supported by WMS-service for <a href="http://docs.geoserver.org/latest/en/user/services/wms/reference.html#getfeatureinfo">GetFeatureInfo</a> requests, compares them with the formats implemented in the plugin, and finally returns string representing most preferred format for <a href="http://docs.geoserver.org/latest/en/user/services/wms/reference.html#getfeatureinfo">GetFeatureInfo</a> requests.
+Real request will be perfermed only at first time call, all subsequent calls will return the cached string.</p>
+
+<h3>
+<a id="options-1" class="anchor" href="#options-1" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Options</h3>
+
+<table>
+<thead>
+<tr>
+<th>Option name</th>
+<th>Is required</th>
+<th>Default value</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>done</td>
+<td>false</td>
+<td>-</td>
+<td>Callback which will be called if request succeeds</td>
+</tr>
+<tr>
+<td>fail</td>
+<td>false</td>
+<td><code>function(errorThrown) {throw errorThrown;}</code></td>
+<td>Callback which will be called if request will fail</td>
+</tr>
+<tr>
+<td>always</td>
+<td>false</td>
+<td>-</td>
+<td>Callback which will be called regardless of whether request succeed or not</td>
+</tr>
+</tbody>
+</table>
+
+<h3>
+<a id="example-1" class="anchor" href="#example-1" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Example</h3>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-c">// Create leaflet map.</span>
+<span class="pl-k">var</span> map <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">L.Map</span>(<span class="pl-s"><span class="pl-pds">'</span>map<span class="pl-pds">'</span></span>).<span class="pl-en">setView</span>([<span class="pl-k">-</span><span class="pl-c1">41.59490508367679</span>, <span class="pl-c1">146.77734375000003</span>], <span class="pl-c1">7</span>);
+
+<span class="pl-c">// Create &amp; add OSM layer.</span>
+<span class="pl-k">var</span> osm <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">L.TileLayer</span>(<span class="pl-s"><span class="pl-pds">'</span>http://{s}.tile.osm.org/{z}/{x}/{y}.png<span class="pl-pds">'</span></span>).<span class="pl-en">addTo</span>(map);
+
+<span class="pl-c">// Create &amp; add WMS-layer.</span>
+<span class="pl-k">var</span> tasmania <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">L.TileLayer.WMS</span>(<span class="pl-s"><span class="pl-pds">'</span>http://demo.opengeo.org/geoserver/wms<span class="pl-pds">'</span></span>, {
+  layers<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>topp:tasmania<span class="pl-pds">'</span></span>,
+  format<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>image/png<span class="pl-pds">'</span></span>,
+  transparent<span class="pl-k">:</span> <span class="pl-c1">true</span>,
+  version<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>1.3.0<span class="pl-pds">'</span></span>,
+  crs<span class="pl-k">:</span> <span class="pl-c1">L</span>.<span class="pl-c1">CRS</span>.<span class="pl-c1">EPSG4326</span>
+}).<span class="pl-en">addTo</span>(map);
+
+<span class="pl-c">// Request preferred info format.</span>
+<span class="pl-smi">tasmania</span>.<span class="pl-en">getInfoFormat</span>({
+  <span class="pl-en">done</span><span class="pl-k">:</span> <span class="pl-k">function</span>(<span class="pl-smi">infoFormat</span>) {
+  <span class="pl-en">console</span>.<span class="pl-c1">log</span>(<span class="pl-s"><span class="pl-pds">'</span>getInfoFormat succeed: <span class="pl-pds">'</span></span>, infoFormat);
+  },
+  <span class="pl-en">fail</span><span class="pl-k">:</span> <span class="pl-k">function</span>(<span class="pl-smi">errorThrown</span>) {
+  <span class="pl-en">console</span>.<span class="pl-c1">log</span>(<span class="pl-s"><span class="pl-pds">'</span>getInfoFormat failed: <span class="pl-pds">'</span></span>, errorThrown);
+  },
+  <span class="pl-en">always</span><span class="pl-k">:</span> <span class="pl-k">function</span>() {
+  <span class="pl-en">console</span>.<span class="pl-c1">log</span>(<span class="pl-s"><span class="pl-pds">'</span>getInfoFormat finished<span class="pl-pds">'</span></span>);
+  }
+});</pre></div>
+
+<h2>
+<a id="getfeatureinfo" class="anchor" href="#getfeatureinfo" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>getFeatureInfo</h2>
+
+<p>Performs <a href="http://docs.geoserver.org/latest/en/user/services/wms/reference.html#getfeatureinfo">GetFeatureInfo</a> requests.
+Returns <a href="http://geojson.org/geojson-spec.html#feature-collection-objects">GeoJSON FeatureCollection</a> representing received features info.
+If preferred info format isn't defined in method options, call to getInfoFormat will be performed first.</p>
+
+<h3>
+<a id="options-2" class="anchor" href="#options-2" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Options</h3>
+
+<table>
+<thead>
+<tr>
+<th>Option name</th>
+<th>Is required</th>
+<th>Default value</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>latlng</td>
+<td>true</td>
+<td>-</td>
+<td>Geographical point in which request must be performed. Must be instance of leaflet's <a href="http://leafletjs.com/reference#latlng">L.LatLng</a>
+</td>
+</tr>
+<tr>
+<td>infoFormat</td>
+<td>false</td>
+<td>-</td>
+<td>String representing preferred info format. If option won't be defined,  call to getInfoFormat will be performed first &amp; returned string will be used as info format</td>
+</tr>
+<tr>
+<td>featureCount</td>
+<td>false</td>
+<td>1</td>
+<td>Maximum number of features to return in response</td>
+</tr>
+<tr>
+<td>done</td>
+<td>false</td>
+<td>-</td>
+<td>Callback which will be called if request succeeds</td>
+</tr>
+<tr>
+<td>fail</td>
+<td>false</td>
+<td><code>function(errorThrown) {throw errorThrown;}</code></td>
+<td>Callback which will be called if request will fail</td>
+</tr>
+<tr>
+<td>always</td>
+<td>false</td>
+<td>-</td>
+<td>Callback which will be called regardless of whether request succeed or not</td>
+</tr>
+</tbody>
+</table>
+
+<h3>
+<a id="supported-formats" class="anchor" href="#supported-formats" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Supported formats</h3>
+
+<table>
+<thead>
+<tr>
+<th>Format</th>
+<th>Priority</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>applicaion/geojson</td>
+<td>1</td>
+<td>Some GIS servers can respond directly in <a href="http://geojson.org/geojson-spec.html">GeoJSON</a> format, so this format has the highest priority</td>
+</tr>
+<tr>
+<td>'application/json'</td>
+<td>2</td>
+<td>Exists in GeoServer published WMS-services, also represents <a href="http://geojson.org/geojson-spec.html">GeoJSON</a> format</td>
+</tr>
+<tr>
+<td>'application/vnd.ogc.gml'</td>
+<td>3</td>
+<td>Some GIS servers can respond in <a href="http://www.gdmc.nl/events/GISday2004/relay/data/02-069_OpenGIS_Geography_Markup_Language_GML_Implementation_Specification_version_2.1.2.pdf">GML</a> format which can describe features geometries &amp; their attributive information as <a href="http://geojson.org/geojson-spec.html">GeoJSON</a> format, but in XML notation</td>
+</tr>
+<tr>
+<td>'application/vnd.ogc.gml/3.1.1'</td>
+<td>4</td>
+<td>Same as 'application/vnd.ogc.gml', but another version of the specification</td>
+</tr>
+<tr>
+<td>'application/vnd.ogc.wms_xml'</td>
+<td>5</td>
+<td>Represents features attributive information in XML notation, but without geometries</td>
+</tr>
+<tr>
+<td>'text/xml'</td>
+<td>6</td>
+<td>Same as 'application/vnd.ogc.wms_xml' but with another mime</td>
+</tr>
+<tr>
+<td>'text/html'</td>
+<td>7</td>
+<td>Represents features attributive information as HTML-table, but without geometries</td>
+</tr>
+</tbody>
+</table>
+
+<h3>
+<a id="example-2" class="anchor" href="#example-2" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Example</h3>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-c">// Create leaflet map.</span>
+<span class="pl-k">var</span> map <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">L.Map</span>(<span class="pl-s"><span class="pl-pds">'</span>map<span class="pl-pds">'</span></span>).<span class="pl-en">setView</span>([<span class="pl-k">-</span><span class="pl-c1">41.59490508367679</span>, <span class="pl-c1">146.77734375000003</span>], <span class="pl-c1">7</span>);
+
+<span class="pl-c">// Create &amp; add OSM layer.</span>
+<span class="pl-k">var</span> osm <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">L.TileLayer</span>(<span class="pl-s"><span class="pl-pds">'</span>http://{s}.tile.osm.org/{z}/{x}/{y}.png<span class="pl-pds">'</span></span>).<span class="pl-en">addTo</span>(map);
+
+<span class="pl-c">// Create &amp; add WMS-layer.</span>
+<span class="pl-k">var</span> tasmania <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">L.TileLayer.WMS</span>(<span class="pl-s"><span class="pl-pds">'</span>http://demo.opengeo.org/geoserver/wms<span class="pl-pds">'</span></span>, {
+  layers<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>topp:tasmania<span class="pl-pds">'</span></span>,
+  format<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>image/png<span class="pl-pds">'</span></span>,
+  transparent<span class="pl-k">:</span> <span class="pl-c1">true</span>,
+  version<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>1.3.0<span class="pl-pds">'</span></span>,
+  crs<span class="pl-k">:</span> <span class="pl-c1">L</span>.<span class="pl-c1">CRS</span>.<span class="pl-c1">EPSG4326</span>
+}).<span class="pl-en">addTo</span>(map);
+
+<span class="pl-c">// Perform 'GetFeatureInfo' request.</span>
+<span class="pl-smi">map</span>.<span class="pl-en">on</span>(<span class="pl-s"><span class="pl-pds">'</span>click<span class="pl-pds">'</span></span>, <span class="pl-k">function</span>(<span class="pl-smi">e</span>) {
+  <span class="pl-smi">tasmania</span>.<span class="pl-en">getFeatureInfo</span>({
+    latlng<span class="pl-k">:</span> <span class="pl-smi">e</span>.<span class="pl-smi">latlng</span>,
+    <span class="pl-en">done</span><span class="pl-k">:</span> <span class="pl-k">function</span>(<span class="pl-smi">featureCollection</span>) {
+    <span class="pl-en">console</span>.<span class="pl-c1">log</span>(<span class="pl-s"><span class="pl-pds">'</span>getFeatureInfosucceed: <span class="pl-pds">'</span></span>, featureCollection);
+  },
+  <span class="pl-en">fail</span><span class="pl-k">:</span> <span class="pl-k">function</span>(<span class="pl-smi">errorThrown</span>) {
+    <span class="pl-en">console</span>.<span class="pl-c1">log</span>(<span class="pl-s"><span class="pl-pds">'</span>getFeatureInfo failed: <span class="pl-pds">'</span></span>, errorThrown);
+  },
+  <span class="pl-en">always</span><span class="pl-k">:</span> <span class="pl-k">function</span>() {
+      <span class="pl-en">console</span>.<span class="pl-c1">log</span>(<span class="pl-s"><span class="pl-pds">'</span>getFeatureInfo finished<span class="pl-pds">'</span></span>);
+  }
+  });
+});</pre></div>
+
+<h1>
+<a id="demo-examples" class="anchor" href="#demo-examples" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Demo examples</h1>
+
+<ul>
+<li><a href="http://flexberry.github.io/Leaflet-WMS/examples/basic.html">Basic</a></li>
+</ul>
+
+<h1>
+<a id="license" class="anchor" href="#license" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>License</h1>
+
+<p><a href="LICENSE">MIT</a></p>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Leaflet-WMS maintained by <a href="https://github.com/Flexberry">Flexberry</a></p>
+        <p>Published with <a href="https://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>

@@ -96,7 +96,6 @@
 
         wmsLayer.getFeatureInfo({
           latlng: e.latlng,
-          infoFormat: 'application/vnd.ogc.gml',
           done: function(featuresCollection, xhr) {
             popupContent += '<span>' + this.options.name + ':</span><br>';
 
