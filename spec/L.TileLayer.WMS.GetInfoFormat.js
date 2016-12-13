@@ -1,50 +1,47 @@
-describe('L.TileLayer.WMS.GetInfoFormat', function () {
+describe('L.TileLayer.WMS', function () {
 
   describe('#GetInfoFormat', function () {
-    it('is the intersection', function () {
-
+    it('returns the format with the highest priority when finding intersections', function () {
       var originaAJAX = L.TileLayer.WMS.Util.AJAX;
 
-      L.TileLayer.WMS.Util.AJAX = function(options) {
+      L.TileLayer.WMS.Util.AJAX = sinon.spy(function(options) {
         var responseText = '' +
         '<?xml version="1.0" encoding="UTF-8"?>' +
         '<WMS_Capabilities>' +
         '  <Capability>' +
         '    <Request>' +
-        '      <GetCapabilities>' +
-        '        <Format>text/xml</Format>' +
-        '      </GetCapabilities>' +
         '      <GetFeatureInfo>' +
-        '        <Format>text/plain</Format>' +
-        '        <Format>application/vnd.ogc.gml</Format>' +
-        '        <Format>application/vnd.ogc.gml/3.1.1</Format>' +
         '        <Format>text/html</Format>' +
         '        <Format>application/json</Format>' +
+        '        <Format>format3</Format>' +
+        '        <Format>format4</Format>' +
         '      </GetFeatureInfo>' +
         '    </Request>' +
         '  </Capability>' +
         '</WMS_Capabilities>';
         return options.done(responseText);
-      };
+      });
 
       var layer = new L.TileLayer.WMS('http://test.ru', {
         version: '1.3.0',
       });
 
-      var doneSpy = sinon.spy();
-      var result = layer.getInfoFormat({ done: doneSpy });
+      var done = sinon.spy(function(infoFormat) {
+      });
 
-      expect(doneSpy.called).to.be.deep.equal(true);
-      expect(doneSpy.firstCall.args[0]).to.be.deep.equal("application/json");
+      layer.getInfoFormat({ done: done });
+
+      expect(done.calledOnce).to.be.equal(true);
+      expect(L.TileLayer.WMS.Util.AJAX.calledOnce).to.be.equal(true);
+      expect(done.firstCall.args[0]).to.be.deep.equal("application/json");
 
       L.TileLayer.WMS.Util.AJAX = originaAJAX;
     });
 
-    it('no intersection', function () {
-
+    it('returns null if not finding intersections', function () {
       var originaAJAX = L.TileLayer.WMS.Util.AJAX;
 
-      L.TileLayer.WMS.Util.AJAX = function(options) {
+      L.TileLayer.WMS.Util.AJAX = sinon.spy(function(options) {
         var responseText = '' +
         '<?xml version="1.0" encoding="UTF-8"?>' +
         '<WMS_Capabilities>' +
@@ -60,21 +57,22 @@ describe('L.TileLayer.WMS.GetInfoFormat', function () {
         '  </Capability>' +
         '</WMS_Capabilities>';
         return options.done(responseText);
-      };
+      });
 
       var layer = new L.TileLayer.WMS('http://test.ru', {
         version: '1.3.0',
       });
 
-      var doneSpy = sinon.spy();
-      var result = layer.getInfoFormat({ done: doneSpy });
+      var done = sinon.spy(function(infoFormat) {
+      });
 
-      expect(doneSpy.called).to.be.deep.equal(true);
-      expect(doneSpy.firstCall.args[0]).to.be.deep.equal(null);
+      layer.getInfoFormat({ done: done });
+
+      expect(done.calledOnce).to.be.equal(true);
+      expect(L.TileLayer.WMS.Util.AJAX.calledOnce).to.be.equal(true);
+      expect(done.firstCall.args[0]).to.be.deep.equal(null);
 
       L.TileLayer.WMS.Util.AJAX = originaAJAX;
     });
-
-
   });
 });

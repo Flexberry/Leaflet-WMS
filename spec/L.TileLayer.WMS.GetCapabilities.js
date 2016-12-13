@@ -1,5 +1,5 @@
 describe('L.TileLayer.WMS', function () {
-  
+
   describe('#getCapabilities', function () {
     it('returns parsed capabilities through specified \'done\' callback', function () {
       // Stub AJAX util.
@@ -73,7 +73,7 @@ describe('L.TileLayer.WMS', function () {
     it('returns exception through \'fail\' callback if AJAX request succeed with text containing \'ServiceExceptionReport\'', function () {
       var originaAJAX = L.TileLayer.WMS.Util.AJAX;
 
-      L.TileLayer.WMS.Util.AJAX = function(options) {
+      L.TileLayer.WMS.Util.AJAX = sinon.spy(function(options) {
         var responseText = '' +
         '<?xmlversion="1.0"?>' +
         '<ServiceExceptionReport version="1.2.0">' +
@@ -82,15 +82,21 @@ describe('L.TileLayer.WMS', function () {
         '  </ServiceException>' +
         '</ServiceExceptionReport>';
         return options.done(responseText);
-      };
+      });
+
       var layer = new L.TileLayer.WMS('http://test.ru', {
         version: '1.3.0',
       });
 
-      var failSpy = sinon.spy();
-      var result = layer.getCapabilities({ fail: failSpy });
+      var fail = sinon.spy(function(capabilities) {
+      });
 
-      expect(failSpy.called).to.be.deep.equal(true);
+      layer.getCapabilities({ fail: fail });
+
+      expect(fail.calledOnce).to.be.equal(true);
+      expect(L.TileLayer.WMS.Util.AJAX.calledOnce).to.be.equal(true);
+      var str = fail.getCall(0).args[0].toString();
+      expect(str.indexOf("Error: Unable to parse specified 'xmlString' it isn't valid")).to.be.deep.equal(0);
 
       L.TileLayer.WMS.Util.AJAX = originaAJAX;
     });
@@ -98,7 +104,7 @@ describe('L.TileLayer.WMS', function () {
     it('returns exception through \'fail\' callback if AJAX request succeed with text containing \'ows:ExceptionReport\'', function () {
       var originaAJAX = L.TileLayer.WMS.Util.AJAX;
 
-      L.TileLayer.WMS.Util.AJAX = function(options) {
+      L.TileLayer.WMS.Util.AJAX = sinon.spy(function(options) {
         var responseText = '' +
         '<?xmlversion="1.0"?>' +
         '<ows:ExceptionReport version="1.3.0">' +
@@ -108,45 +114,50 @@ describe('L.TileLayer.WMS', function () {
         '  </ows:Exception>' +
         '</ows:ExceptionReport>';
         return options.done(responseText);
-      };
+      });
 
       var layer = new L.TileLayer.WMS('http://test.ru', {
         version: '1.3.0',
       });
 
-      var failSpy = sinon.spy();
-      var result = layer.getCapabilities({ fail: failSpy });
+      var fail = sinon.spy(function(capabilities) {
+      });
 
-      expect(failSpy.called).to.be.deep.equal(true);
+      layer.getCapabilities({ fail: fail });
+
+      expect(fail.calledOnce).to.be.equal(true);
+      expect(L.TileLayer.WMS.Util.AJAX.calledOnce).to.be.equal(true);
+      var str = fail.getCall(0).args[0].toString();
+      expect(str.indexOf("Error: Unable to parse specified 'xmlString' it isn't valid")).to.be.deep.equal(0);
 
       L.TileLayer.WMS.Util.AJAX = originaAJAX;
     });
 
+    it('returns exception through \'fail\' callback if AJAX request succeed with text containing \'ExceptionReport\'', function () {
+
+    });
+
     it('returns exception through \'fail\' callback if AJAX request fails with an error', function () {
-      var originaAJAX = L.TileLayer.WMS.Util.AJAX;
+      var server = sinon.fakeServer.create();
 
-      L.TileLayer.WMS.Util.AJAX = function(options) {
-      var responseText = '' +
-        '<?xml version="1.0" encoding="UTF-8"?>' +
-        '<ExceptionReport version="1.0">' +
-        '  <Exception exceptionCode="ResourceNotFound">' +
-        '    <ExceptionText>Internal Server error.' +
-        '    <ExceptionText>' +
-        '  </Exception>' +
-        '</ExceptionReport>';
-        return options.done(responseText);
-      };
-
-      var layer = new L.TileLayer.WMS('http://test.ru', {
-        version: '1.3.0',
+      server.respondWith(function(xhr) {
+        xhr.respond(404, { 'Content-Type': 'text/html' }, 'Not Found');
+        return;
       });
 
-      var failSpy = sinon.spy();
-      var result = layer.getCapabilities({ fail: failSpy });
+      var layer = new L.TileLayer.WMS('http://test.ru', {
+      });
 
-      expect(failSpy.called).to.be.deep.equal(true);
+      var fail = sinon.spy(function(capabilities) {
+      });
 
-      L.TileLayer.WMS.Util.AJAX = originaAJAX;
+      layer.getCapabilities({fail:fail});
+      server.respond();
+
+      // Check events handlers.
+      expect(fail.calledOnce).to.be.equal(true);
+      var str = fail.firstCall.args[0].toString();
+      expect(str.indexOf("Error: 404 - Not Found")).to.be.deep.equal(0);
     });
   });
 });
