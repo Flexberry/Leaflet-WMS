@@ -134,7 +134,35 @@ describe('L.TileLayer.WMS', function () {
     });
 
     it('returns exception through \'fail\' callback if AJAX request succeed with text containing \'ExceptionReport\'', function () {
+      var originaAJAX = L.TileLayer.WMS.Util.AJAX;
 
+      L.TileLayer.WMS.Util.AJAX = sinon.spy(function(options) {
+      var responseText = '' +
+        '<?xml version="1.0"?>' +
+        '<ExceptionReport version="1.3.0">' +
+        '  <Exception exceptionCode="ResourceNotFound" locator="404">' +
+        '    <ExceptionText>Internal Server error.' +
+        '    </ExceptionText>' +
+        '  </Exception>' +
+        '</ExceptionReport>';
+        return options.done(responseText);
+      });
+
+      var layer = new L.TileLayer.WMS('http://test.ru', {
+        version: '1.3.0',
+      });
+
+      var fail = sinon.spy(function(capabilities) {
+      });
+
+      layer.getCapabilities({ fail: fail });
+
+     expect(fail.calledOnce).to.be.equal(true);
+     expect(L.TileLayer.WMS.Util.AJAX.calledOnce).to.be.equal(true);
+     var str = fail.firstCall.args[0].toString();
+     expect(str.indexOf("Error: ResourceNotFound - Internal Server error")).to.be.deep.equal(0);
+
+    L.TileLayer.WMS.Util.AJAX = originaAJAX;
     });
 
     it('returns exception through \'fail\' callback if AJAX request fails with an error', function () {
