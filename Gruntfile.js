@@ -3,7 +3,7 @@ module.exports = function (grunt) {
     pkg: grunt.file.readJSON('package.json'),
 
     srcPath: 'src',
-    
+
     distPath: 'dist',
 
     specPath: 'spec',
@@ -28,6 +28,7 @@ module.exports = function (grunt) {
           '<%= srcPath %>/Util/L.TileLayer.WMS.Util.XML.ExceptionReport.js',
           '<%= srcPath %>/Util/L.TileLayer.WMS.Util.XML.ExceptionReport.OWS.js',
           '<%= srcPath %>/Util/L.TileLayer.WMS.Util.XML.ExceptionReport.Service.js',
+          '<%= srcPath %>/Util/L.TileLayer.WMS.Util.XML.ExceptionReport.Exception.js',
           '<%= srcPath %>/Util/L.TileLayer.WMS.Util.AJAX.js',
 
           '<%= srcPath %>/Format/L.TileLayer.WMS.Format.js',

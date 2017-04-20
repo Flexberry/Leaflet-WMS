@@ -11,12 +11,10 @@
       padding: 0;
       margin: 0;
     }
-
     html, body, #map {
       height: 100%;
       width: 100%;
     }
-
     .leaflet-grab {
       cursor: default !important;
     }
@@ -51,13 +49,11 @@
       top: '50%', // Top position relative to parent.
       left: '50%' // Left position relative to parent.
     });
-
     // Create leaflet map.
     var map = new L.Map('map').setView([58.01314494542303, 56.21704101562501], 15);
-
     // Create & add OSM layer.
     var osm = new L.TileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png').addTo(map);
-  
+
     // Create & add POI layer.
     var poi = new L.TileLayer.WMS('http://geoserver.ics.perm.ru/geoserver/ows', {
       layers: 'osm_perm_region:perm_points_of_interest',
@@ -67,7 +63,6 @@
       crs: L.CRS.EPSG4326,
       name: 'Perm'
     }).addTo(map);
-
     // Create & add cadastre layer.
     var cadastre = new L.TileLayer.WMS('https://pkk5.rosreestr.ru/arcgis/services/Cadastre/CadastreWMS/MapServer/WMSServer', {
       layers: '18',
@@ -77,7 +72,6 @@
       crs: L.CRS.EPSG3857,
       name: 'Cadastre'
     }).addTo(map);
-
     // Handle click on map.
     var wmsLayers = [poi, cadastre];
     map.on('click', function(e) {
@@ -88,43 +82,102 @@
       }
 
       var fullfilledRequestsCount = 0;
-      var popupContent = '';
+      var popupContent = '<u><b>Подробная информация</b></u><br>';
+      var allFeatureCount = 0;
 
       // Send 'GetFeatureInfo' requests.
       for (var i = 0; i < wmsLayersCount; i++) {
         var wmsLayer = wmsLayers[i];
-
         wmsLayer.getFeatureInfo({
           latlng: e.latlng,
           done: function(featuresCollection, xhr) {
-            popupContent += '<span>' + this.options.name + ':</span><br>';
-
-            var features = featuresCollection.features;
-            var featuresCount = features.length;
-            popupContent += 'Features count: ' + featuresCount + '<br>';
-            popupContent += '<br>'
+            var result = createMarkingWhenDone(this, featuresCollection);
+            popupContent += result.popupContent;
+            allFeatureCount += result.allFeatureCount;
           },
           fail: function(errorThrown, xhr) {
-            popupContent += '<span>' + this.options.name + ':</span><br>';
-            popupContent += 'Error message: \'' + errorThrown.message + '\'<br>';
-            popupContent += '<br>'
+            popupContent += createMarkingWhenError(this, errorThrown);
           },
           always: function() {
             fullfilledRequestsCount++;
-
             // Stop spinner.
             if (fullfilledRequestsCount === wmsLayersCount) {
-              spinner.stop();
+              var finalPopupContent = createFinalMarking(wmsLayersCount, allFeatureCount, popupContent);
 
-              new L.Popup()
+              spinner.stop();
+              new L.Popup({minWidth: 300,maxWidth: 700 ,maxHeight: 400})
                 .setLatLng(e.latlng)
-                .setContent(popupContent)
+                .setContent(finalPopupContent)
                 .openOn(map)
             }
           }
         });
       }
     });
+
+    // Функции
+    function createMarkingWhenDone(_this, _featuresCollection)
+    {
+      var features = _featuresCollection.features;
+      var featuresCount = features.length;
+      var _popupContent = '';
+
+      // Информация о слое.
+      _popupContent += '<b>' + _this.options.name;
+      _popupContent += '</b> <span>(Слой, Количество вложеных бъектов: ' + featuresCount + ')</span><br>';
+
+      if (featuresCount > 0)
+      {
+        for (var j = 0; j < featuresCount; j++) {
+          var feature = features[j];
+          var featureNumber = j + 1;
+          var properties = feature.properties;
+          var propertiesNames = Object.keys(properties) || [];
+
+          // Информация об объекте.
+          _popupContent += '<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+          _popupContent += 'Object №' + featureNumber;
+          _popupContent += '</b> <span>(Объект, Количество свойств: ' + propertiesNames.length + ')</span><br>';
+
+          for (var q = 0; q < propertiesNames.length; q++) {
+            var propertiesName = propertiesNames[q];
+            var number = q + 1;
+
+            // Свойства объекта.
+            _popupContent += '<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(';
+            _popupContent += number +') ' + propertiesName;
+            _popupContent += ': ' + properties[propertiesName] + '</span><br>';
+          }
+        }
+      }
+      var result = {};
+      result.allFeatureCount = featuresCount;
+      result.popupContent = _popupContent;
+      return result;
+    }
+
+    function createMarkingWhenError(_this, _errorThrown)
+    {
+      var _popupContent = '';
+
+      // Информация о ошибке.
+      _popupContent += '<u><b>' + _this.options.name + ':</u></b><br>';
+      _popupContent += 'Error message: \'' + _errorThrown.message + '\'<br>';
+      _popupContent += '<br>'
+
+      return _popupContent;
+    }
+
+    function createFinalMarking(_wmsLayersCount, _allFeatureCount, _popupContent)
+    {
+      var finalPopupContent = '<u><b>Общая информация</b></u><br>';
+      finalPopupContent += '<span>Количество слоев: '+ _wmsLayersCount + ' </span><br>';
+      finalPopupContent += '<span>Количество объектов: '+ _allFeatureCount + ' </span><br><br>';
+      finalPopupContent += _popupContent;
+
+      return finalPopupContent;
+    }
+
   </script>
 </body>
 </html>
