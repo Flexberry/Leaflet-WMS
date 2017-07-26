@@ -1,4 +1,4 @@
-/*! Leaflet-WMS 1.0.0 2016-12-20 */
+/*! Leaflet-WMS 1.0.0 2017-07-26 */
 ;(function(window, document, undefined) {
 "use strict";
 if (!String.prototype.trim) {
@@ -82,19 +82,19 @@ L.TileLayer.WMS.Util.JSON = {
 };
 
 L.TileLayer.WMS.Util.XML = {
-  parse: function(xmlString) {
+  parse: function (xmlString) {
     var xml;
 
     try {
       if (window.DOMParser) {
         var parser = new window.DOMParser();
-        xml = parser.parseFromString(xmlString , 'text/xml');
-      } else if (window.ActiveXObject){
+        xml = parser.parseFromString(xmlString, 'text/xml');
+      } else if (window.ActiveXObject) {
         xml = new window.ActiveXObject('Microsoft.XMLDOM');
         xml.async = 'false';
         xml.loadXML(xmlString);
       }
-    } catch(e) {
+    } catch (e) {
       xml = null;
     }
 
@@ -120,7 +120,7 @@ L.TileLayer.WMS.Util.XML = {
     return L.TileLayer.WMS.Util.XML.normalizeElement(xml.documentElement);
   },
 
-  getElementText: function(element) {
+  getElementText: function (element) {
     if (!element) {
       return '';
     }
@@ -128,7 +128,7 @@ L.TileLayer.WMS.Util.XML = {
     return element.innerText || element.textContent || element.text;
   },
 
-  normalizeElement: function(element) {
+  normalizeElement: function (element) {
     // Remove empty <text></text> elements.
     if (element.nodeType === 3 && L.TileLayer.WMS.Util.XML.getElementText(element).trim() === '' && element.parentNode) {
       element.parentNode.removeChild(element);
@@ -145,9 +145,24 @@ L.TileLayer.WMS.Util.XML = {
     }
 
     return element;
+  },
+
+  extractInfoFormats: function (element) {
+    var infoFormats = [];
+
+    if (element) {
+      var capabilityElement = element.getElementsByTagName('Capability')[0];
+      var getFeatureInfoElement = capabilityElement.getElementsByTagName('GetFeatureInfo')[0];
+      var formatElements = getFeatureInfoElement.getElementsByTagName('Format');
+      for (var i = 0, len = formatElements.length; i < len; i++) {
+        var formatElement = formatElements[i];
+        infoFormats.push(L.TileLayer.WMS.Util.XML.getElementText(formatElement).trim().toLowerCase());
+      }
+    }
+
+    return infoFormats;
   }
 };
-
 L.TileLayer.WMS.Util.XML.ExceptionReport = {
   getExisting: function() {
     var existingExceptionReports = [];
@@ -520,7 +535,7 @@ L.TileLayer.WMS.Util.XML.ExceptionReport.Exception = {
 })();
 
 L.TileLayer.WMS.Format = {
-  getExisting: function() {
+  getExisting: function () {
     var existingFormatsNames = [];
     var formatNameSpace = L.TileLayer.WMS.Format;
 
@@ -532,7 +547,7 @@ L.TileLayer.WMS.Format = {
     }
 
     // Sort existing formats by their priority.
-    existingFormatsNames.sort(function(name1, name2) {
+    existingFormatsNames.sort(function (name1, name2) {
       var format1 = L.TileLayer.WMS.Format[name1];
       var format2 = L.TileLayer.WMS.Format[name2];
 
@@ -547,9 +562,96 @@ L.TileLayer.WMS.Format = {
     });
 
     return existingFormatsNames;
+  },
+
+  getAvailable: function (options) {
+    options = L.Util.extend({
+      fail: function (errorThrown) {
+        throw errorThrown;
+      }
+    }, options || {});
+
+    var done = function (capabilities, xhr) {
+      if (typeof options.done === 'function') {
+        options.done.call(window, capabilities, xhr);
+      }
+
+      if (typeof options.always === 'function') {
+        options.always.call(window);
+      }
+    };
+
+    var fail = function (errorThrown, xhr) {
+      if (typeof options.fail === 'function') {
+        options.fail.call(window, errorThrown, xhr);
+      }
+
+      if (typeof options.always === 'function') {
+        options.always.call(window);
+      }
+    };
+
+    // Try to send 'GetCapabilities' request.
+    L.TileLayer.WMS.Util.AJAX({
+      url: options.url,
+      method: 'GET',
+      content: {
+        request: 'GetCapabilities',
+        service: 'WMS',
+        version: options.wmsParams ? options.wmsParams.version || '1.1.0' : '1.1.0'
+      },
+
+      done: function (responseText, xhr) {
+        try {
+          // If some exception occur, WMS-service can response successfully, but with some exception report,
+          // and such situation must be handled as error.
+          var exceptionReport = L.TileLayer.WMS.Util.XML.ExceptionReport.parse(responseText);
+          if (exceptionReport) {
+            throw new Error(exceptionReport.message);
+          }
+
+          // Parse received capabilities.
+          var capabilities = L.TileLayer.WMS.Util.XML.parse(responseText);
+
+          // Capable formats (supported by service).
+          var capableFormats = L.TileLayer.WMS.Util.XML.extractInfoFormats(capabilities);
+
+          // Existing formats (implemented in plugin) sorted by their priority.
+          var existingFormats = L.TileLayer.WMS.Format.getExisting();
+
+          // Available formats (both implemented in plugin and supported by service) sorted by their priority.
+          var availableFormats = [];
+
+          for (var i = 0; i < existingFormats.length; i++) {
+            var format = existingFormats[i];
+            if (capableFormats.indexOf(format) >= 0) {
+              availableFormats.push(format);
+            }
+          }
+
+          done(availableFormats, xhr);
+        } catch (e) {
+          fail(e, xhr);
+        }
+      },
+      fail: fail
+    });
+  },
+
+  _sortByPriority: function (name1, name2) {
+    var format1 = L.TileLayer.WMS.Format[name1];
+    var format2 = L.TileLayer.WMS.Format[name2];
+
+    if (format1.priority > format2.priority) {
+      return 1;
+    }
+    if (format1.priority < format2.priority) {
+      return -1;
+    }
+
+    return 0;
   }
 };
-
 L.TileLayer.WMS.Format['application/geojson'] = {
   priority: 1,
 
@@ -1119,15 +1221,7 @@ L.TileLayer.WMS.include({
           var existingFormats = L.TileLayer.WMS.Format.getExisting();
 
           // Capable formats (supported by service).
-          var capableFormats = [];
-
-          var capabilityElement = capabilities.getElementsByTagName('Capability')[0];
-          var getFeatureInfoElement = capabilityElement.getElementsByTagName('GetFeatureInfo')[0];
-          var formatElements = getFeatureInfoElement.getElementsByTagName('Format');
-          for (var i = 0, len = formatElements.length; i < len; i++) {
-            var formatElement = formatElements[i];
-            capableFormats.push(L.TileLayer.WMS.Util.XML.getElementText(formatElement).trim().toLowerCase());
-          }
+          var capableFormats = L.TileLayer.WMS.Util.XML.extractInfoFormats(capabilities);
 
           for (var j = 0, len2 = existingFormats.length; j < len2; j++) {
             var format = existingFormats[j];
