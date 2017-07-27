@@ -100,19 +100,5 @@ L.TileLayer.WMS.Format = {
       },
       fail: fail
     });
-  },
-
-  _sortByPriority: function (name1, name2) {
-    var format1 = L.TileLayer.WMS.Format[name1];
-    var format2 = L.TileLayer.WMS.Format[name2];
-
-    if (format1.priority > format2.priority) {
-      return 1;
-    }
-    if (format1.priority < format2.priority) {
-      return -1;
-    }
-
-    return 0;
   }
 };
