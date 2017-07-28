@@ -31,6 +31,19 @@ describe('L.TileLayer.WMS.Util.XML', function () {
     '         ' +
     '</root>' +
     '       ';
+  var responseText = '' +
+    '<?xml version="1.0" encoding="UTF-8"?>' +
+    '<WMS_Capabilities>' +
+    '  <Capability>' +
+    '    <Request>' +
+    '      <GetFeatureInfo>' +
+    '        <Format>format1</Format>' +
+    '        <Format>format2</Format>' +
+    '        <Format>format3</Format>' +
+    '      </GetFeatureInfo>' +
+    '    </Request>' +
+    '  </Capability>' +
+    '</WMS_Capabilities>';
 
   describe('#parse', function () {
     it('returns normalized document', function () {
@@ -67,6 +80,23 @@ describe('L.TileLayer.WMS.Util.XML', function () {
       expect(L.TileLayer.WMS.Util.XML.getElementText(child2Id)).to.be.equal('2');
       expect(child2Name.tagName).to.be.equal('name');
       expect(L.TileLayer.WMS.Util.XML.getElementText(child2Name)).to.be.equal('child2');
+    });
+  });
+
+  describe('#extractInfoFormats', function () {
+    it('returns info formats from capabilities element', function () {
+      // Parse GetCapabilities response
+      var capabilities = L.TileLayer.WMS.Util.XML.parse(responseText);
+
+      // Extract capable formats from capabilities node
+      var capableFormats = L.TileLayer.WMS.Util.XML.extractInfoFormats(capabilities);
+
+      // Check retrieved elements.
+      expect(capableFormats).to.be.an('array');
+      expect(capableFormats).to.have.lengthOf(3);
+      expect(capableFormats).to.have.deep.property('[0]', 'format1');
+      expect(capableFormats).to.have.deep.property('[1]', 'format2');
+      expect(capableFormats).to.have.deep.property('[2]', 'format3');
     });
   });
 });

@@ -1,14 +1,14 @@
 L.TileLayer.WMS.include({
-  getFeatureInfo: function(options) {
+  getFeatureInfo: function (options) {
     options = L.Util.extend({
       featureCount: 1,
-      fail: function(errorThrown) {
+      fail: function (errorThrown) {
         throw errorThrown;
       }
     }, options || {});
 
     var _this = this;
-    var done = function(features, xhr) {
+    var done = function (features, xhr) {
       if (typeof options.done === 'function') {
         options.done.call(_this, features, xhr);
       }
@@ -18,7 +18,7 @@ L.TileLayer.WMS.include({
       }
     };
 
-    var fail = function(errorThrown, xhr) {
+    var fail = function (errorThrown, xhr) {
       if (typeof options.fail === 'function') {
         options.fail.call(_this, errorThrown, xhr);
       }
@@ -28,13 +28,13 @@ L.TileLayer.WMS.include({
       }
     };
 
-    var getInfoFormat = options.infoFormat ? function(callbacks) {
+    var getInfoFormat = options.infoFormat ? function (callbacks) {
       callbacks.done(options.infoFormat);
     } : _this.getInfoFormat;
 
     // Try to get info format for 'GetFeatureInfo' request & send request then.
     getInfoFormat.call(_this, {
-      done: function(infoFormat, xhr) {
+      done: function (infoFormat, xhr) {
         var requestParamaters;
 
         try {
@@ -53,7 +53,7 @@ L.TileLayer.WMS.include({
             throw new Error(errorMessage);
           }
 
-          var leafletMap = _this._map;
+          var leafletMap = _this._map || options.map;
 
           var latlng = options.latlng;
           var point = leafletMap.latLngToContainerPoint(latlng, leafletMap.getZoom());
@@ -87,7 +87,7 @@ L.TileLayer.WMS.include({
             nw.x + ',' + se.y + ',' + se.x + ',' + nw.y;
           requestParamaters[version >= 1.3 ? 'i' : 'x'] = point.x;
           requestParamaters[version >= 1.3 ? 'j' : 'y'] = point.y;
-        } catch(e) {
+        } catch (e) {
           fail(e);
 
           return;
@@ -98,7 +98,7 @@ L.TileLayer.WMS.include({
           url: _this._url,
           method: 'GET',
           content: requestParamaters,
-          done: function(responseText, xhr) {
+          done: function (responseText, xhr) {
             try {
               // If some exception occur, WMS-service can response successfully, but with some exception report,
               // and such situation must be handled as error.

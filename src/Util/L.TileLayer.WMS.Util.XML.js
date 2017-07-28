@@ -1,17 +1,17 @@
 L.TileLayer.WMS.Util.XML = {
-  parse: function(xmlString) {
+  parse: function (xmlString) {
     var xml;
 
     try {
       if (window.DOMParser) {
         var parser = new window.DOMParser();
-        xml = parser.parseFromString(xmlString , 'text/xml');
-      } else if (window.ActiveXObject){
+        xml = parser.parseFromString(xmlString, 'text/xml');
+      } else if (window.ActiveXObject) {
         xml = new window.ActiveXObject('Microsoft.XMLDOM');
         xml.async = 'false';
         xml.loadXML(xmlString);
       }
-    } catch(e) {
+    } catch (e) {
       xml = null;
     }
 
@@ -37,7 +37,7 @@ L.TileLayer.WMS.Util.XML = {
     return L.TileLayer.WMS.Util.XML.normalizeElement(xml.documentElement);
   },
 
-  getElementText: function(element) {
+  getElementText: function (element) {
     if (!element) {
       return '';
     }
@@ -94,5 +94,21 @@ L.TileLayer.WMS.Util.XML = {
     }
 
     return element;
+  },
+
+  extractInfoFormats: function (element) {
+    var infoFormats = [];
+
+    if (element) {
+      var capabilityElement = element.getElementsByTagName('Capability')[0];
+      var getFeatureInfoElement = capabilityElement.getElementsByTagName('GetFeatureInfo')[0];
+      var formatElements = getFeatureInfoElement.getElementsByTagName('Format');
+      for (var i = 0, len = formatElements.length; i < len; i++) {
+        var formatElement = formatElements[i];
+        infoFormats.push(L.TileLayer.WMS.Util.XML.getElementText(formatElement).trim().toLowerCase());
+      }
+    }
+
+    return infoFormats;
   }
 };
