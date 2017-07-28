@@ -1,5 +1,5 @@
 {
-  "name": "leaflet-wms",
+  "name": "Leaflet-WMS",
   "version": "1.0.0",
   "homepage": "https://github.com/Flexberry/Leaflet-WMS",
   "description": "Leaflet plug-in containing extensions for L.TileLayer.WMS layers",
