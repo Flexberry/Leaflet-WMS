@@ -89,10 +89,23 @@
 
       var fullfilledRequestsCount = 0;
       var popupContent = '';
+      var boundingBoxesContent = '';
 
       // Send 'GetFeatureInfo' requests.
       for (var i = 0; i < wmsLayersCount; i++) {
         var wmsLayer = wmsLayers[i];
+
+        wmsLayer.getBoundingBoxes({
+          done: function(boundingBoxes, xhr) {
+            console.log(boundingBoxes);
+          },
+          fail: function(errorThrown, xhr) {
+            console.log(errorThrown);
+          },
+          always: function() {
+            
+          }
+        });
 
         wmsLayer.getFeatureInfo({
           latlng: e.latlng,

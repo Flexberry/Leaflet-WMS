@@ -45,6 +45,38 @@ L.TileLayer.WMS.Util.XML = {
     return element.innerText || element.textContent || element.text;
   },
 
+  getChildElementsByTagName: function(xml, tagName) {
+    var childNodes = xml.childNodes;
+    var result = [];
+
+    for (var i = 0; i < childNodes.length; i++) {
+      if (childNodes[i].nodeName === tagName) {
+        result.push(childNodes[i]);
+      }
+    }
+
+    return result;
+  },
+
+  getElementsByPath: function(xml, path) {
+    var pathArray = path.split('/');
+    var result = L.TileLayer.WMS.Util.XML.getChildElementsByTagName(xml, pathArray[0]);
+
+    for (var i = 1; i < pathArray.length; i++) {
+      var newResult = [];
+
+      for(var j = 0; j < result.length; j++) {
+        var newElements = L.TileLayer.WMS.Util.XML.getChildElementsByTagName(result[j], pathArray[i]);
+
+        newResult = newResult.concat(newElements);
+      }
+
+      result = newResult;
+    }
+
+    return result;
+  },
+
   normalizeElement: function(element) {
     // Remove empty <text></text> elements.
     if (element.nodeType === 3 && L.TileLayer.WMS.Util.XML.getElementText(element).trim() === '' && element.parentNode) {
