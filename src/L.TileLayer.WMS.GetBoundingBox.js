@@ -52,7 +52,7 @@ L.TileLayer.WMS.include({
 
           // If it is possible to get bounding boxes for specific layers.
           if (layersElements && layersElements.length > 0 && wmsLayers && wmsLayers.length > 0) {
-            // Wms layers names array/
+            // Wms layers names array.
             var wmsLayersNames = wmsLayers.split(',');
 
             // Pure wms layers names array without namespace.
@@ -81,9 +81,6 @@ L.TileLayer.WMS.include({
             targetLayersElements.push(rootLayerElement);
           }
 
-          // Resulting bounding box.
-          var boundingBox;
-
           for (var k = 0, lenk = targetLayersElements.length; k < lenk; k++) {
             var west;
             var east;
@@ -92,7 +89,7 @@ L.TileLayer.WMS.include({
 
             var layer = targetLayersElements[k];
 
-            if (_this.wmsParams.version >= 1.3) {
+            if (!_this.wmsParams.version || _this.wmsParams.version >= 1.3 || _this.wmsParams.version === '1.3.0') {
               // Every named Layer shall have exactly one <EX_GeographicBoundingBox> element... (OGC® 06-042).
               var geographicBoundingBox = layer.getElementsByTagName('EX_GeographicBoundingBox')[0];
 
@@ -113,7 +110,7 @@ L.TileLayer.WMS.include({
             }
 
             // Wrap it into LatLngBounds.
-            var bounds = L.latLngBounds(L.latLng(north, east), L.latLng(south, west));
+            var bounds = L.latLngBounds(L.latLng(south, west), L.latLng(north, east));
 
             // If it is not the first iteration.
             if (boundingBox) {
