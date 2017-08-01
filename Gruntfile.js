@@ -40,7 +40,7 @@ module.exports = function (grunt) {
           '<%= srcPath %>/Format/L.TileLayer.WMS.Format.OGC.WMS.XML.js',
           '<%= srcPath %>/Format/L.TileLayer.WMS.Format.HTML.js',
 
-          '<%= srcPath %>/L.TileLayer.WMS.GetBoundingBoxes.js',
+          '<%= srcPath %>/L.TileLayer.WMS.GetBoundingBox.js',
           '<%= srcPath %>/L.TileLayer.WMS.GetCapabilities.js',
           '<%= srcPath %>/L.TileLayer.WMS.GetInfoFormat.js',
           '<%= srcPath %>/L.TileLayer.WMS.GetFeatureInfo.js'
