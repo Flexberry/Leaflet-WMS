@@ -1,5 +1,5 @@
 L.TileLayer.WMS.Util.XML.ExceptionReport.OWS = {
-  parse: function(xmlString) {
+  parse: function (xmlString) {
     if (typeof xmlString !== 'string' || xmlString.indexOf('<ows:ExceptionReport') < 0) {
       return null;
     }

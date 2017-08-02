@@ -42,7 +42,7 @@
     "karma-sinon": "^1.0.5",
     "karma-sinon-chai": "^1.2.0",
     "mocha": "^2.5.3",
-    "sinon": "^1.17.4",
+    "sinon": "^2.1.0",
     "sinon-chai": "^2.8.0"
   },
   "scripts": {

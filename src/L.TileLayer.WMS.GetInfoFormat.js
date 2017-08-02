@@ -45,15 +45,7 @@ L.TileLayer.WMS.include({
           var existingFormats = L.TileLayer.WMS.Format.getExisting();
 
           // Capable formats (supported by service).
-          var capableFormats = [];
-
-          var capabilityElement = capabilities.getElementsByTagName('Capability')[0];
-          var getFeatureInfoElement = capabilityElement.getElementsByTagName('GetFeatureInfo')[0];
-          var formatElements = getFeatureInfoElement.getElementsByTagName('Format');
-          for (var i = 0, len = formatElements.length; i < len; i++) {
-            var formatElement = formatElements[i];
-            capableFormats.push(L.TileLayer.WMS.Util.XML.getElementText(formatElement).trim().toLowerCase());
-          }
+          var capableFormats = L.TileLayer.WMS.Util.XML.extractInfoFormats(capabilities);
 
           for (var j = 0, len2 = existingFormats.length; j < len2; j++) {
             var format = existingFormats[j];
