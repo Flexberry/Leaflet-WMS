@@ -1,4 +1,4 @@
-/*! Leaflet-WMS 1.0.0 2017-08-01 */
+/*! Leaflet-WMS 1.0.0 2017-08-02 */
 ;(function(window, document, undefined) {
 "use strict";
 if (!String.prototype.trim) {
@@ -1120,7 +1120,7 @@ L.TileLayer.WMS.include({
       }
     };
 
-    // Check if info format was already received & cached.
+    // Check if bounding box was already received & cached.
     var boundingBox = _this._boundingBox;
     if (boundingBox) {
       done(boundingBox);

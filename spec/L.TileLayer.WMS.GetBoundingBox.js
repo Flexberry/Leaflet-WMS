@@ -208,7 +208,7 @@ describe('L.TileLayer.WMS', function () {
 
             L.TileLayer.WMS.Util.AJAX = originaAJAX;
         });
-        it('returns bounding box for multiple specified layers (wms version = 1.3.0)', function () {
+        it('returns bounding box for multiple specified layers (wms version = 1.1.0)', function () {
             var originaAJAX = L.TileLayer.WMS.Util.AJAX;
 
             L.TileLayer.WMS.Util.AJAX = sinon.spy(function (options) {
@@ -256,7 +256,7 @@ describe('L.TileLayer.WMS', function () {
 
             L.TileLayer.WMS.Util.AJAX = originaAJAX;
         });
-        it('returns bounding box for service root layer, if no layers option specified (wms version = 1.3.0)', function () {
+        it('returns bounding box for service root layer, if no layers option specified (wms version = 1.1.0)', function () {
             var originaAJAX = L.TileLayer.WMS.Util.AJAX;
 
             L.TileLayer.WMS.Util.AJAX = sinon.spy(function (options) {

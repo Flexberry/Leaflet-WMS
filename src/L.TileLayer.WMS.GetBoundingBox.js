@@ -29,7 +29,7 @@ L.TileLayer.WMS.include({
       }
     };
 
-    // Check if info format was already received & cached.
+    // Check if bounding box was already received & cached.
     var boundingBox = _this._boundingBox;
     if (boundingBox) {
       done(boundingBox);
