@@ -198,7 +198,7 @@ L.TileLayer.WMS.Util.XML.ExceptionReport = {
 };
 
 L.TileLayer.WMS.Util.XML.ExceptionReport.OWS = {
-  parse: function(xmlString) {
+  parse: function (xmlString) {
     if (typeof xmlString !== 'string' || xmlString.indexOf('<ows:ExceptionReport') < 0) {
       return null;
     }
@@ -240,7 +240,6 @@ L.TileLayer.WMS.Util.XML.ExceptionReport.OWS = {
     return exceptionReport;
   }
 };
-
 L.TileLayer.WMS.Util.XML.ExceptionReport.Service = {
   parse: function(xmlString) {
     if (typeof xmlString !== 'string' || xmlString.indexOf('<ServiceExceptionReport') < 0) {
