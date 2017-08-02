@@ -128,7 +128,7 @@ describe('L.TileLayer.WMS.Format', function () {
 
       L.TileLayer.WMS.Util.AJAX = sinon.spy(function (options) {
         var responseText = '' +
-          '<?xmlversion="1.0"?>' +
+          '<?xml version="1.0"?>' +
           '<ServiceExceptionReport version="1.2.0">' +
           '  <ServiceException code="999" locator="INSERTSTMT01">' +
           '    parse error: missing closing tag for element WKB_GEOM' +
@@ -148,7 +148,7 @@ describe('L.TileLayer.WMS.Format', function () {
       expect(fail.calledOnce).to.be.equal(true);
       expect(L.TileLayer.WMS.Util.AJAX.calledOnce).to.be.equal(true);
       var str = fail.getCall(0).args[0].toString();
-      expect(str.indexOf("Error: Unable to parse specified 'xmlString' it isn't valid")).to.be.deep.equal(0);
+      expect(str.indexOf("Error: 999 - parse error: missing closing tag for element WKB_GEOM. ")).to.be.deep.equal(0);
 
       L.TileLayer.WMS.Util.AJAX = originaAJAX;
     });
@@ -158,11 +158,11 @@ describe('L.TileLayer.WMS.Format', function () {
 
       L.TileLayer.WMS.Util.AJAX = sinon.spy(function (options) {
         var responseText = '' +
-          '<?xmlversion="1.0"?>' +
-          '<ows:ExceptionReport version="1.3.0">' +
+          '<?xml version="1.0"?>' +
+          '<ows:ExceptionReport xmlns:ows="http://www.opengis.net/ows" version="1.3.0">' +
           '  <ows:Exception exceptionCode="XML getFeature request SAX parsing error" locator="test">' +
-          '    <ows:ExceptionText>TEST text' +
-          '    </ows:ExceptionText>' +
+          '    <ExceptionText>TEST text' +
+          '    </ExceptionText>' +
           '  </ows:Exception>' +
           '</ows:ExceptionReport>';
         return options.done(responseText);
@@ -179,7 +179,7 @@ describe('L.TileLayer.WMS.Format', function () {
       expect(fail.calledOnce).to.be.equal(true);
       expect(L.TileLayer.WMS.Util.AJAX.calledOnce).to.be.equal(true);
       var str = fail.getCall(0).args[0].toString();
-      expect(str.indexOf("Error: Unable to parse specified 'xmlString' it isn't valid")).to.be.deep.equal(0);
+      expect(str.indexOf("Error: XML getFeature request SAX parsing error - TEST text. ")).to.be.deep.equal(0);
 
       L.TileLayer.WMS.Util.AJAX = originaAJAX;
     });
@@ -190,12 +190,12 @@ describe('L.TileLayer.WMS.Format', function () {
       L.TileLayer.WMS.Util.AJAX = sinon.spy(function (options) {
         var responseText = '' +
           '<?xml version="1.0"?>' +
-          '<ExceptionReport version="1.3.0">' +
-          '  <Exception exceptionCode="ResourceNotFound" locator="404">' +
-          '    <ExceptionText>Internal Server error.' +
+          '<ows:ExceptionReport xmlns:ows="http://www.opengis.net/ows"  version="1.3.0">' +
+          '  <ows:Exception exceptionCode="ResourceNotFound" locator="404">' +
+          '    <ExceptionText>Internal Server error' +
           '    </ExceptionText>' +
-          '  </Exception>' +
-          '</ExceptionReport>';
+          '  </ows:Exception>' +
+          '</ows:ExceptionReport >';
         return options.done(responseText);
       });
 
@@ -210,7 +210,7 @@ describe('L.TileLayer.WMS.Format', function () {
       expect(fail.calledOnce).to.be.equal(true);
       expect(L.TileLayer.WMS.Util.AJAX.calledOnce).to.be.equal(true);
       var str = fail.firstCall.args[0].toString();
-      expect(str.indexOf("Error: ResourceNotFound - Internal Server error")).to.be.deep.equal(0);
+      expect(str.indexOf("Error: ResourceNotFound - Internal Server error. ")).to.be.deep.equal(0);
 
       L.TileLayer.WMS.Util.AJAX = originaAJAX;
     });

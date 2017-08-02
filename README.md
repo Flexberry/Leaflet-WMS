@@ -62,6 +62,7 @@ Real request will be perfermed only at first time call, all subsequent calls wil
 |done|false|-|Callback which will be called if request succeeds|
 |fail|false|```function(errorThrown) {throw errorThrown;}```|Callback which will be called if request will fail|
 |always|false|-|Callback which will be called regardless of whether request succeed or not|
+|map|false|-|Leaflet map object which will be used to define point's coordinates, needed if layer is not in leaflet map container|
 
 ### Example
 ```javascript

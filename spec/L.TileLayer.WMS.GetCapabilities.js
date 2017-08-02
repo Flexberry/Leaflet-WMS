@@ -4,27 +4,26 @@ describe('L.TileLayer.WMS', function () {
     it('returns parsed capabilities through specified \'done\' callback', function () {
       // Stub AJAX util.
       var originaAJAX = L.TileLayer.WMS.Util.AJAX;
-      L.TileLayer.WMS.Util.AJAX = sinon.spy(function(options) {
+      L.TileLayer.WMS.Util.AJAX = sinon.spy(function (options) {
         var responseText = '' +
-        '<?xml version="1.0" encoding="UTF-8"?>' +
-        '<WMS_Capabilities>' +
-        '  <Capability>' +
-        '    <Request>' +
-        '      <GetFeatureInfo>' +
-        '        <Format>format1</Format>' +
-        '        <Format>format2</Format>' +
-        '        <Format>format3</Format>' +
-        '      </GetFeatureInfo>' +
-        '    </Request>' +
-        '  </Capability>' +
-        '</WMS_Capabilities>';
+          '<?xml version="1.0" encoding="UTF-8"?>' +
+          '<WMS_Capabilities>' +
+          '  <Capability>' +
+          '    <Request>' +
+          '      <GetFeatureInfo>' +
+          '        <Format>format1</Format>' +
+          '        <Format>format2</Format>' +
+          '        <Format>format3</Format>' +
+          '      </GetFeatureInfo>' +
+          '    </Request>' +
+          '  </Capability>' +
+          '</WMS_Capabilities>';
 
         return options.done(responseText);
       });
 
       // Prepare 'done' callback.
-      var done = sinon.spy(function(capabilities) {
-      });
+      var done = sinon.spy(function (capabilities) {});
 
       // Create WMS layer.
       var layer = new L.TileLayer.WMS('http://test.ru', {
@@ -32,7 +31,9 @@ describe('L.TileLayer.WMS', function () {
       });
 
       // Call to 'getCapabilities'.
-      layer.getCapabilities({ done: done });
+      layer.getCapabilities({
+        done: done
+      });
 
       // Retrieve parsed capabilities from 'done' callback arguments.
       var capabilitiesElement = done.getCall(0).args[0];
@@ -56,7 +57,9 @@ describe('L.TileLayer.WMS', function () {
       expect(L.TileLayer.WMS.Util.XML.getElementText(formatElements[2])).to.be.equal('format3');
 
       // Call to 'getCapabilities' again to check that cached value will be returned & second AJAX request won't be sended.
-      layer.getCapabilities({ done: done });
+      layer.getCapabilities({
+        done: done
+      });
 
       // Retrieve parsed capabilities from 'done' callback arguments.
       var capabilitiesElement2 = done.getCall(1).args[0];
@@ -73,14 +76,14 @@ describe('L.TileLayer.WMS', function () {
     it('returns exception through \'fail\' callback if AJAX request succeed with text containing \'ServiceExceptionReport\'', function () {
       var originaAJAX = L.TileLayer.WMS.Util.AJAX;
 
-      L.TileLayer.WMS.Util.AJAX = sinon.spy(function(options) {
+      L.TileLayer.WMS.Util.AJAX = sinon.spy(function (options) {
         var responseText = '' +
-        '<?xmlversion="1.0"?>' +
-        '<ServiceExceptionReport version="1.2.0">' +
-        '  <ServiceException code="999" locator="INSERTSTMT01">' +
-        '    parse error: missing closing tag for element WKB_GEOM' +
-        '  </ServiceException>' +
-        '</ServiceExceptionReport>';
+          '<?xml version="1.0"?>' +
+          '<ServiceExceptionReport version="1.2.0">' +
+          '  <ServiceException code="999" locator="INSERTSTMT01">' +
+          '    parse error: missing closing tag for element WKB_GEOM' +
+          '  </ServiceException>' +
+          '</ServiceExceptionReport>';
         return options.done(responseText);
       });
 
@@ -88,15 +91,16 @@ describe('L.TileLayer.WMS', function () {
         version: '1.3.0',
       });
 
-      var fail = sinon.spy(function(capabilities) {
-      });
+      var fail = sinon.spy(function (capabilities) {});
 
-      layer.getCapabilities({ fail: fail });
+      layer.getCapabilities({
+        fail: fail
+      });
 
       expect(fail.calledOnce).to.be.equal(true);
       expect(L.TileLayer.WMS.Util.AJAX.calledOnce).to.be.equal(true);
       var str = fail.getCall(0).args[0].toString();
-      expect(str.indexOf("Error: Unable to parse specified 'xmlString' it isn't valid")).to.be.deep.equal(0);
+      expect(str.indexOf("Error: 999 - parse error: missing closing tag for element WKB_GEOM. ")).to.be.deep.equal(0);
 
       L.TileLayer.WMS.Util.AJAX = originaAJAX;
     });
@@ -104,15 +108,15 @@ describe('L.TileLayer.WMS', function () {
     it('returns exception through \'fail\' callback if AJAX request succeed with text containing \'ows:ExceptionReport\'', function () {
       var originaAJAX = L.TileLayer.WMS.Util.AJAX;
 
-      L.TileLayer.WMS.Util.AJAX = sinon.spy(function(options) {
+      L.TileLayer.WMS.Util.AJAX = sinon.spy(function (options) {
         var responseText = '' +
-        '<?xmlversion="1.0"?>' +
-        '<ows:ExceptionReport version="1.3.0">' +
-        '  <ows:Exception exceptionCode="XML getFeature request SAX parsing error" locator="test">' +
-        '    <ows:ExceptionText>TEST text' +
-        '    </ows:ExceptionText>' +
-        '  </ows:Exception>' +
-        '</ows:ExceptionReport>';
+          '<?xml version="1.0"?>' +
+          '<ows:ExceptionReport xmlns:ows="http://www.opengis.net/ows" version="1.3.0">' +
+          '  <ows:Exception exceptionCode="XML getFeature request SAX parsing error" locator="test">' +
+          '    <ExceptionText>TEST text' +
+          '    </ExceptionText>' +
+          '  </ows:Exception>' +
+          '</ows:ExceptionReport>';
         return options.done(responseText);
       });
 
@@ -120,15 +124,16 @@ describe('L.TileLayer.WMS', function () {
         version: '1.3.0',
       });
 
-      var fail = sinon.spy(function(capabilities) {
-      });
+      var fail = sinon.spy(function (capabilities) {});
 
-      layer.getCapabilities({ fail: fail });
+      layer.getCapabilities({
+        fail: fail
+      });
 
       expect(fail.calledOnce).to.be.equal(true);
       expect(L.TileLayer.WMS.Util.AJAX.calledOnce).to.be.equal(true);
       var str = fail.getCall(0).args[0].toString();
-      expect(str.indexOf("Error: Unable to parse specified 'xmlString' it isn't valid")).to.be.deep.equal(0);
+      expect(str.indexOf("Error: XML getFeature request SAX parsing error - TEST text. ")).to.be.deep.equal(0);
 
       L.TileLayer.WMS.Util.AJAX = originaAJAX;
     });
@@ -136,15 +141,15 @@ describe('L.TileLayer.WMS', function () {
     it('returns exception through \'fail\' callback if AJAX request succeed with text containing \'ExceptionReport\'', function () {
       var originaAJAX = L.TileLayer.WMS.Util.AJAX;
 
-      L.TileLayer.WMS.Util.AJAX = sinon.spy(function(options) {
-      var responseText = '' +
-        '<?xml version="1.0"?>' +
-        '<ExceptionReport version="1.3.0">' +
-        '  <Exception exceptionCode="ResourceNotFound" locator="404">' +
-        '    <ExceptionText>Internal Server error.' +
-        '    </ExceptionText>' +
-        '  </Exception>' +
-        '</ExceptionReport>';
+      L.TileLayer.WMS.Util.AJAX = sinon.spy(function (options) {
+        var responseText = '' +
+          '<?xml version="1.0"?>' +
+          '<ows:ExceptionReport xmlns:ows="http://www.opengis.net/ows" version="1.3.0">' +
+          '  <ows:Exception exceptionCode="ResourceNotFound" locator="404">' +
+          '    <ExceptionText>Internal Server error' +
+          '    </ExceptionText>' +
+          '  </ows:Exception>' +
+          '</ows:ExceptionReport>';
         return options.done(responseText);
       });
 
@@ -152,34 +157,37 @@ describe('L.TileLayer.WMS', function () {
         version: '1.3.0',
       });
 
-      var fail = sinon.spy(function(capabilities) {
+      var fail = sinon.spy(function (capabilities) {});
+
+      layer.getCapabilities({
+        fail: fail
       });
 
-      layer.getCapabilities({ fail: fail });
+      expect(fail.calledOnce).to.be.equal(true);
+      expect(L.TileLayer.WMS.Util.AJAX.calledOnce).to.be.equal(true);
+      var str = fail.firstCall.args[0].toString();
+      expect(str.indexOf("Error: ResourceNotFound - Internal Server error. ")).to.be.deep.equal(0);
 
-     expect(fail.calledOnce).to.be.equal(true);
-     expect(L.TileLayer.WMS.Util.AJAX.calledOnce).to.be.equal(true);
-     var str = fail.firstCall.args[0].toString();
-     expect(str.indexOf("Error: ResourceNotFound - Internal Server error")).to.be.deep.equal(0);
-
-    L.TileLayer.WMS.Util.AJAX = originaAJAX;
+      L.TileLayer.WMS.Util.AJAX = originaAJAX;
     });
 
     it('returns exception through \'fail\' callback if AJAX request fails with an error', function () {
       var server = sinon.fakeServer.create();
 
-      server.respondWith(function(xhr) {
-        xhr.respond(404, { 'Content-Type': 'text/html' }, 'Not Found');
+      server.respondWith(function (xhr) {
+        xhr.respond(404, {
+          'Content-Type': 'text/html'
+        }, 'Not Found');
         return;
       });
 
-      var layer = new L.TileLayer.WMS('http://test.ru', {
-      });
+      var layer = new L.TileLayer.WMS('http://test.ru', {});
 
-      var fail = sinon.spy(function(capabilities) {
-      });
+      var fail = sinon.spy(function (capabilities) {});
 
-      layer.getCapabilities({fail:fail});
+      layer.getCapabilities({
+        fail: fail
+      });
       server.respond();
 
       // Check events handlers.
