@@ -3,7 +3,7 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
-## [1.1.0-beta.1] - 2017-08-24
+## [1.1.0] - 2017-08-30
 ### Added
 * Add `getBoundingBox` support.
 
