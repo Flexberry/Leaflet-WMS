@@ -1,6 +1,6 @@
 {
   "name": "Leaflet-WMS",
-  "version": "1.1.0",
+  "version": "1.2.0-beta.2",
   "homepage": "https://github.com/Flexberry/Leaflet-WMS",
   "description": "Leaflet plug-in containing extensions for L.TileLayer.WMS layers",
   "license": "MIT",
@@ -26,6 +26,6 @@
     "spin.js": "2.3.2"
   },
   "resolutions": {
-    "leaflet": "1.0.1"
+    "leaflet": "1.2.0"
   }
 }

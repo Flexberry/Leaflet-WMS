@@ -160,10 +160,10 @@ describe('L.TileLayer.WMS.Format', function () {
         var responseText = '' +
           '<?xml version="1.0"?>' +
           '<ows:ExceptionReport xmlns:ows="http://www.opengis.net/ows" version="1.3.0">' +
-          '  <ows:Exception exceptionCode="XML getFeature request SAX parsing error" locator="test">' +
+          '  <Exception exceptionCode="XML getFeature request SAX parsing error" locator="test">' +
           '    <ExceptionText>TEST text' +
           '    </ExceptionText>' +
-          '  </ows:Exception>' +
+          '  </Exception>' +
           '</ows:ExceptionReport>';
         return options.done(responseText);
       });
@@ -191,10 +191,10 @@ describe('L.TileLayer.WMS.Format', function () {
         var responseText = '' +
           '<?xml version="1.0"?>' +
           '<ows:ExceptionReport xmlns:ows="http://www.opengis.net/ows"  version="1.3.0">' +
-          '  <ows:Exception exceptionCode="ResourceNotFound" locator="404">' +
+          '  <Exception exceptionCode="ResourceNotFound" locator="404">' +
           '    <ExceptionText>Internal Server error' +
           '    </ExceptionText>' +
-          '  </ows:Exception>' +
+          '  </Exception>' +
           '</ows:ExceptionReport >';
         return options.done(responseText);
       });

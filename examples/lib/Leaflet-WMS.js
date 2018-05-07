@@ -1,4 +1,4 @@
-/*! Leaflet-WMS 1.0.0 2017-08-02 */
+/*! Leaflet-WMS 1.2.0-beta.2 2018-05-07 */
 ;(function(window, document, undefined) {
 "use strict";
 if (!String.prototype.trim) {
@@ -1146,8 +1146,6 @@ L.TileLayer.WMS.include({
             var wmsLayersNames = wmsLayers.split(',');
 
             // Pure wms layers names array without namespace.
-            var targetLayersNames = [];
-
             for (var i = 0, leni = wmsLayersNames.length; i < leni; i++) {
               var wmsLayer = wmsLayersNames[i];
 
@@ -1155,7 +1153,7 @@ L.TileLayer.WMS.include({
               var name = wmsLayer.split(':');
               name = name[1] || name[0];
 
-              targetLayersNames.push(name);
+              wmsLayersNames.push(name);
             }
 
             for (var j = 0, lenj = layersElements.length; j < lenj; j++) {
@@ -1163,7 +1161,7 @@ L.TileLayer.WMS.include({
               var layerName = L.TileLayer.WMS.Util.XML.getElementText(layerElement.getElementsByTagName('Name')[0]);
 
               // Put suitable layer nodes to array.
-              if (targetLayersNames.indexOf(layerName) >= 0) {
+              if (wmsLayersNames.indexOf(layerName) >= 0) {
                 targetLayersElements.push(layerElement);
               }
             }
