@@ -1,4 +1,4 @@
-/*! Leaflet-WMS 1.2.0-beta.2 2018-05-07 */
+/*! Leaflet-WMS 1.2.0-beta.3 2018-05-11 */
 ;(function(window, document, undefined) {
 "use strict";
 if (!String.prototype.trim) {
