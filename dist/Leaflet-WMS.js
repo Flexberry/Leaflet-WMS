@@ -1,4 +1,4 @@
-/*! Leaflet-WMS 1.2.0-beta.3 2018-05-11 */
+/*! Leaflet-WMS 1.2.0-beta.3 2021-04-07 */
 ;(function(window, document, undefined) {
 "use strict";
 if (!String.prototype.trim) {
@@ -1087,6 +1087,39 @@ L.TileLayer.WMS.Format['text/html'] = {
     return featureCollection;
   }
 };
+
+L.TileLayer.WMS.include({
+  drawCanvas: function (tile, coords, done) {
+    var err;
+    var ctx = tile.getContext('2d');
+
+    var tileSize = this.getTileSize();
+    tile.width = tileSize.x;
+    tile.height = tileSize.y;
+
+    var img = new Image();
+    img.onload = function () {
+      try {
+        ctx.drawImage(img, 0, 0);
+        tile.complete = true;
+      } catch (e) {
+        err = e;
+      } finally {
+        done(err, tile);
+      }
+    };
+    var tileZoom = this._getZoomForUrl();
+    img.src = isNaN(tileZoom) ? '' : this.getTileUrl(coords);
+    img.crossOrigin = 'anonymous';
+  },
+  createTile: function (coords, done) {
+    var tile = L.DomUtil.create('canvas', 'leaflet-tile');
+
+    this.drawCanvas(tile, coords, done);
+
+    return tile;
+  },
+});
 
 L.TileLayer.WMS.include({
   _boundingBox: null,
