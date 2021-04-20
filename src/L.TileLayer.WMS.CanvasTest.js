@@ -19,8 +19,8 @@ L.TileLayer.WMS.include({
       }
     };
     var tileZoom = this._getZoomForUrl();
-    img.src = isNaN(tileZoom) ? '' : this.getTileUrl(coords);
     img.crossOrigin = 'anonymous';
+    img.src = isNaN(tileZoom) ? '' : this.getTileUrl(coords);
   },
   createTile: function (coords, done) {
     var tile = L.DomUtil.create('canvas', 'leaflet-tile');
