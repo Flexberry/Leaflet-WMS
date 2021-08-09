@@ -1,6 +1,6 @@
 {
   "name": "Leaflet-WMS",
-  "version": "1.2.0-beta.3",
+  "version": "1.2.0-beta.4",
   "description": "Leaflet plug-in containing extensions for L.TileLayer.WMS layers",
   "main": "dist/Leaflet-WMS.js",
   "directories": {
